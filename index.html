@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agentic DS Toolkit</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--ink:hsl(240 18% 13%);
+    --muted:hsl(240 8% 42%);--faint:hsl(240 8% 56%);--border:hsl(240 13% 89%);
+    --border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --a:hsl(212 72% 50%);--b:hsl(263 62% 56%);--c:hsl(168 58% 38%);
+    --sh:0 1px 2px hsl(240 20% 20%/.06);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--ink:hsl(240 18% 93%);
+    --muted:hsl(240 9% 65%);--faint:hsl(240 9% 46%);--border:hsl(240 10% 20%);
+    --border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+    --a:hsl(212 80% 68%);--b:hsl(263 74% 74%);--c:hsl(168 58% 55%);
+    --sh:0 1px 2px hsl(0 0% 0%/.3);}}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 22px 80px}
+  .sig{width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--a),var(--b),var(--c));
+    display:grid;place-items:center;font-size:24px;box-shadow:var(--sh);margin-bottom:20px}
+  h1{font-size:29px;margin:0 0 10px;letter-spacing:-.02em;font-weight:670;line-height:1.2}
+  .lede{color:var(--muted);font-size:16.5px;margin:0 0 8px}
+  .lede b{color:var(--ink);font-weight:620}
+  .sub{color:var(--faint);font-size:14px;margin:0 0 34px}
+  h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    margin:38px 0 12px;font-weight:700}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--card);
+    border:1px solid var(--border);border-radius:13px;padding:17px 19px;margin-bottom:10px;
+    box-shadow:var(--sh);transition:border-color .14s,transform .1s}
+  a.card:hover{border-color:var(--border2);transform:translateY(-1px)}
+  a.card > b{display:block;font-size:16px;font-weight:630;margin-bottom:4px;letter-spacing:-.01em}
+  a.card span b{font-weight:640;color:var(--ink)}
+  a.card span{display:block;font-size:13.6px;color:var(--muted);line-height:1.55}
+  a.card.hero{border-color:color-mix(in srgb,var(--b) 45%,var(--border));
+    background:color-mix(in srgb,var(--b) 5%,var(--card))}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+  .row a.card{margin-bottom:0}
+  ul.plain{list-style:none;padding:0;margin:0}
+  ul.plain li{padding:9px 0;border-top:1px solid var(--border);font-size:14.5px}
+  ul.plain li:first-child{border-top:none}
+  ul.plain a{color:var(--ink);text-decoration:none;font-weight:560}
+  ul.plain a:hover{text-decoration:underline}
+  ul.plain em{color:var(--faint);font-style:normal;font-size:13px}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--border);
+    color:var(--faint);font-size:13.2px;line-height:1.7}
+  footer a{color:var(--muted)}
+  .note{background:var(--chip);border-radius:10px;padding:13px 16px;font-size:13.5px;
+    color:var(--muted);line-height:1.6;margin-top:14px}
+  .note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sig">🧭</div>
+  <h1>Agentic DS Toolkit</h1>
+  <p class="lede">Herramientas y metodología para construir un <b>design system multibrand que
+    un agente de IA pueda consumir</b> — no solo leer.</p>
+  <p class="sub">Todo abre en el navegador. Sin instalación, sin servidor, sin internet.</p>
+
+  <h2>Empieza aquí</h2>
+  <a class="card hero" href="roadmap.html">
+    <b>Roadmap adaptativo →</b>
+    <span>Contesta dos preguntas y te devuelve <b>tu</b> mapa: 135 pasos secuenciales
+      explicados uno a uno + 18 transversales, reordenados y podados según tus respuestas.</span>
+  </a>
+
+  <h2>Dos vistas del mismo modelo</h2>
+  <div class="row">
+    <a class="card" href="mapa-mental.html">
+      <b>Mapa mental</b>
+      <span>Radial. El territorio completo de un vistazo, con el estado de cada fase.</span>
+    </a>
+    <a class="card" href="mapa-proceso.html">
+      <b>Mapa de proceso</b>
+      <span>Acordeón de 3 niveles: fase → parte → paso. Para profundizar.</span>
+    </a>
+  </div>
+
+  <h2>Playbook — la metodología</h2>
+  <ul class="plain">
+    <li><a href="playbook/01-stabilise.md">01 · Stabilise</a> — <em>diagnóstico y las acciones para parar el caos</em></li>
+    <li><a href="playbook/02-structure.md">02 · Structure</a> — <em>capa semántica y los métodos de mapping</em></li>
+    <li><a href="playbook/03-formalise.md">03 · Formalise</a> — <em>componentes como APIs, metadata a escala</em></li>
+    <li><a href="playbook/04-enforce.md">04 · Enforce</a> — <em>reglas como datos, linter ≠ governance</em></li>
+    <li><a href="playbook/05-human-layer.md">05 · Capa humana</a> — <em>steward y accountability</em></li>
+    <li><a href="playbook/99-buy-in.md">99 · Buy-in</a> — <em>cómo conseguir el permiso</em></li>
+    <li><a href="README.md">…y 5 capítulos más</a> — <em>ver el README</em></li>
+  </ul>
+
+  <div class="note"><b>El playbook está en borrador.</b> Cada capítulo declara su estado en la
+    cabecera. Las herramientas sí están probadas.</div>
+
+  <footer>
+    Construido sobre el trabajo de <b>Cristian Morales Achiardi</b>, <b>Grace Han</b> y
+    <b>Diana Wolosin</b> — los enlaces a sus artículos están en el
+    <a href="README.md">README</a>.<br>
+    <a href="LICENSE">CC BY 4.0</a> · <a href="https://github.com/sj4design/agentic-ds-toolkit">código</a>
+  </footer>
+</div>
+</body>
+</html>
