@@ -1,0 +1,987 @@
+<title>Pre-flight — qué se pregunta antes de mostrarte el mapa</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);
+    --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
+    --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);
+    --stop:hsl(2 72% 50%);
+    --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);
+    --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
+    --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+    --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);
+    --stop:hsl(2 80% 66%);
+    --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);}}
+  :root[data-theme="light"]{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);
+    --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
+    --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);
+    --stop:hsl(2 72% 50%);
+    --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);}
+  :root[data-theme="dark"]{
+    --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);
+    --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
+    --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+    --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);
+    --stop:hsl(2 80% 66%);
+    --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:24px 20px 80px}
+
+  header{display:flex;align-items:flex-start;gap:13px;margin-bottom:20px;flex-wrap:wrap}
+  .sig{width:38px;height:38px;border-radius:10px;flex:none;
+    background:linear-gradient(135deg,var(--before),var(--spec),var(--after));
+    display:grid;place-items:center;font-size:19px;box-shadow:var(--sh-sm)}
+  h1{font-size:19px;margin:0;letter-spacing:-.015em;font-weight:650}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .tools{margin-left:auto}
+  button.tg{font:inherit;font-size:12.5px;padding:6px 12px;border-radius:99px;cursor:pointer;
+    border:1px solid var(--border2);background:var(--card);color:var(--ink)}
+  button.tg:hover{background:var(--chip)}
+
+  /* progreso */
+  .rail{display:flex;gap:6px;margin-bottom:22px}
+  .rail div{height:4px;flex:1;border-radius:99px;background:var(--border);
+    transition:background .25s}
+  .rail div.on{background:var(--spec)}
+  .rail div.done{background:var(--ok)}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:24px;box-shadow:var(--sh-sm);margin-bottom:16px}
+  .gate{border-color:color-mix(in srgb,var(--stop) 35%,var(--border))}
+
+  .eyebrow{font-size:10.5px;letter-spacing:.1em;font-weight:700;text-transform:uppercase;
+    color:var(--faint);margin-bottom:8px;display:flex;gap:8px;align-items:center}
+  .eyebrow .pill{background:var(--chip);border-radius:99px;padding:2px 8px;
+    letter-spacing:.04em;color:var(--muted)}
+  h2{font-size:21px;margin:0 0 8px;letter-spacing:-.02em;font-weight:660;line-height:1.3}
+  .q-help{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+  .q-help code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  .opts{display:grid;gap:10px}
+  .opt{border:1.5px solid var(--border);background:var(--card2);border-radius:12px;
+    padding:14px 16px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);
+    transition:border-color .14s,background .14s,transform .1s;display:block;width:100%}
+  .opt:hover{border-color:var(--border2);background:var(--chip)}
+  .opt:active{transform:scale(.995)}
+  .opt:focus-visible{outline:2px solid var(--spec);outline-offset:2px}
+  .opt.sel{border-color:var(--spec);background:color-mix(in srgb,var(--spec) 7%,var(--card2))}
+  .opt b{display:block;font-size:14.5px;font-weight:620;margin-bottom:3px}
+  .opt span{display:block;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .opt .ex{display:block;font-size:11.8px;color:var(--faint);margin-top:7px;
+    padding-top:7px;border-top:1px dashed var(--border2);font-style:italic}
+  .opt .lvl{float:right;font-size:10px;font-weight:700;letter-spacing:.06em;
+    padding:2px 8px;border-radius:99px;border:1px solid var(--border2);
+    text-transform:uppercase;font-style:normal;margin-left:8px}
+  .lvl.low{color:var(--stop);border-color:color-mix(in srgb,var(--stop) 40%,var(--border2))}
+  .lvl.med{color:var(--pend);border-color:color-mix(in srgb,var(--pend) 40%,var(--border2))}
+  .lvl.high{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--border2))}
+
+  .note{border-left:3px solid var(--spec);padding:11px 14px;background:var(--chip);
+    border-radius:0 10px 10px 0;font-size:12.8px;color:var(--muted);margin-top:16px;
+    line-height:1.6}
+  .note b{color:var(--ink)}
+  .note.stop{border-color:var(--stop)}
+  .note.ruta{border-color:var(--ruta)}
+
+  .nav{display:flex;gap:10px;margin-top:18px;align-items:center}
+  button.act{font:inherit;font-size:13.5px;font-weight:600;padding:10px 20px;
+    border-radius:10px;cursor:pointer;border:1px solid transparent;
+    background:var(--spec);color:#fff}
+  button.act:hover{filter:brightness(1.07)}
+  button.act[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+  button.ghost{background:transparent;color:var(--muted);border-color:var(--border2)}
+  button.ghost:hover{background:var(--chip);filter:none}
+
+  /* resultado */
+  .ranking{display:grid;gap:8px;margin:4px 0 0}
+  .rank{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:11px;
+    border:1px solid var(--border);background:var(--card2)}
+  .rank.worst{border-color:var(--ruta);
+    background:color-mix(in srgb,var(--ruta) 8%,var(--card2))}
+  .rank .k{font-size:15px;font-weight:700;width:22px;flex:none}
+  .rank .n{font-size:13.5px;font-weight:600;flex:1}
+  .rank .bar{height:6px;border-radius:99px;background:var(--border);width:110px;flex:none;
+    overflow:hidden}
+  .rank .bar i{display:block;height:100%;border-radius:99px}
+  .rank .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--ruta);flex:none}
+
+  /* ── mapa detallado en acordeón ── */
+  details.fase{background:var(--card2);border:1px solid var(--border);border-radius:12px;
+    margin-bottom:8px;overflow:hidden}
+  details.fase.pri{border-color:var(--ruta)}
+  details.fase > summary{cursor:pointer;padding:12px 14px;list-style:none;display:flex;
+    gap:11px;align-items:center;user-select:none}
+  summary::-webkit-details-marker{display:none}
+  details > summary:focus-visible{outline:2px solid var(--spec);outline-offset:-2px}
+  details > summary:hover{background:var(--chip)}
+  .fnum{width:24px;height:24px;border-radius:7px;flex:none;display:grid;place-items:center;
+    font-size:11px;font-weight:700;color:#fff}
+  .fico{font-size:16px;flex:none}
+  .ftitle{font-size:14.2px;font-weight:620;flex:1;letter-spacing:-.008em}
+  .fmeta{font-size:10.5px;color:var(--faint);font-weight:600;flex:none}
+  .why{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--ruta);flex:none}
+  .chev{flex:none;color:var(--faint);font-size:11px;transition:transform .18s}
+  details[open] > summary .chev{transform:rotate(90deg)}
+  .fbody{padding:2px 14px 14px;border-top:1px solid var(--border)}
+  .goal{font-size:13px;color:var(--muted);margin:12px 0 0;line-height:1.6}
+  .goal b{color:var(--ink)}
+  .outb{margin:10px 0 4px;font-size:12.2px;padding:9px 12px;border-radius:9px;
+    background:var(--chip);color:var(--muted);line-height:1.55}
+  .outb b{color:var(--ink)}
+  details.parte{border:1px solid var(--border);border-radius:10px;margin-top:9px;
+    background:var(--card)}
+  details.parte > summary{padding:10px 13px}
+  details.parte[open] > summary{border-bottom:1px solid var(--border)}
+  .pdot{width:7px;height:7px;border-radius:50%;flex:none}
+  .ptitle{font-size:13.2px;font-weight:600;flex:1}
+  .pbody{padding:11px 13px 13px}
+  .pframe{font-size:12.5px;color:var(--muted);margin:0 0 10px;line-height:1.6}
+  ol.pasos{margin:0;padding:0;list-style:none;counter-reset:s}
+  ol.pasos li{counter-increment:s;display:flex;gap:10px;padding:8px 0;
+    border-top:1px dashed var(--border2)}
+  ol.pasos li:first-child{border-top:none;padding-top:2px}
+  ol.pasos li::before{content:counter(s);flex:none;width:18px;height:18px;border-radius:6px;
+    background:var(--chip);color:var(--faint);font-size:10px;font-weight:700;
+    display:grid;place-items:center;margin-top:2px}
+  .sT{font-size:12.9px;font-weight:600;margin-bottom:2px;line-height:1.45}
+  .sD{font-size:12.4px;color:var(--muted);line-height:1.6}
+  .sD code,.pframe code,.goal code,.outb code{background:var(--chip);padding:1px 5px;
+    border-radius:4px;font-size:11.4px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .nb{margin-top:10px;font-size:12.1px;color:var(--muted);padding:8px 11px;
+    border-radius:0 8px 8px 0;background:var(--chip);line-height:1.55}
+  .nb b{color:var(--ink)}
+  .nb.done{border-left:3px solid var(--after)}
+  .nb.mbn{border-left:3px solid var(--ruta)}
+  .nb.flg{border-left:3px solid var(--pend)}
+  .mpill{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.05em;
+    padding:1px 7px;border-radius:99px;text-transform:uppercase;vertical-align:1px;
+    margin-left:6px}
+  .mpill.mbrand{color:var(--ruta);
+    border:1px solid color-mix(in srgb,var(--ruta) 45%,var(--border2))}
+  .mpill.pre{color:var(--ok);
+    border:1px solid color-mix(in srgb,var(--ok) 45%,var(--border2))}
+
+  ol.phases{margin:6px 0 0;padding:0;list-style:none;counter-reset:p}
+  ol.phases li{counter-increment:p;display:flex;gap:11px;align-items:center;
+    padding:9px 13px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px;
+    background:var(--card2);font-size:13.5px}
+  ol.phases li::before{content:counter(p);font-size:11px;font-weight:700;color:var(--faint);
+    width:19px;flex:none;text-align:center}
+  ol.phases li.pri{border-color:var(--ruta);
+    background:color-mix(in srgb,var(--ruta) 8%,var(--card2))}
+  ol.phases li.cut{opacity:.42;text-decoration:line-through;text-decoration-thickness:1px}
+  ol.phases li .why{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--faint);flex:none}
+  ol.phases li.pri .why{color:var(--ruta)}
+
+  .later{display:grid;gap:7px;margin-top:6px}
+  .later div{display:flex;gap:10px;align-items:baseline;font-size:13px;padding:8px 12px;
+    border:1px dashed var(--border2);border-radius:10px;color:var(--muted)}
+  .later b{color:var(--ink);font-weight:600;font-size:13.2px}
+  .later em{margin-left:auto;font-style:normal;font-size:11.5px;color:var(--faint);
+    flex:none;padding-left:12px}
+
+  .sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .sum span{font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:99px;
+    background:var(--chip);border:1px solid var(--border2);color:var(--muted)}
+  .sum span b{color:var(--ink)}
+  h3{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);
+    margin:22px 0 9px;font-weight:700}
+  h3:first-of-type{margin-top:4px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="sig">🚦</div>
+  <div>
+    <h1>Pre-flight — lo que se pregunta antes de mostrarte el mapa</h1>
+    <div class="sub">Prototipo de ADR-022 · 2 preguntas + 1 condicional · el steward va al final</div>
+  </div>
+  <div class="tools"><button class="tg" id="btnTheme">Tema</button></div>
+</header>
+
+<div class="rail" id="rail"></div>
+<div id="stage"></div>
+</div>
+
+<script>
+/* ── modelo ────────────────────────────────────────────────────────── */
+const SAFE=[
+ {k:'S',name:'Structure',q:'¿Dónde viven tus tokens?',
+  help:'Fuente única, duplicación, propiedad. <b>Mira tu repo, no tu intención.</b>',
+  opts:[
+   {l:'low',t:'En varios sitios, y no coinciden',
+    d:'El mismo color está definido más de una vez con valores distintos. Si alguien pregunta quién decide, se abre un hilo en Slack.',
+    ex:'Caso real: un sistema que auditamos tenía su paleta completa duplicada en 9 archivos distintos antes de consolidarla.'},
+   {l:'med',t:'Hay una fuente única, pero sobreviven copias',
+    d:'Existe el archivo canónico, y también exports desincronizados o versiones históricas que nadie borró. Hay dueño, sin proceso escrito.'},
+   {l:'high',t:'Una fuente por hecho, y la regla está escrita',
+    d:'Las copias secundarias se eliminaron, la regla "una fuente por hecho" está documentada y el dueño tiene nombre.'}]},
+ {k:'A',name:'Alignment',q:'¿El mismo token se llama igual en diseño y en código?',
+  help:'Semántica compartida entre plataformas y equipos.',
+  opts:[
+   {l:'low',t:'No, y traducir requiere que alguien se acuerde',
+    d:'Figma dice <code>Primary/Blue</code>, el código dice <code>--brand-500</code>. El mapeo vive en una persona.'},
+   {l:'med',t:'Coinciden casi siempre, con excepciones sin documentar',
+    d:'El grueso está alineado pero hay colisiones que solo se ven leyendo el valor.',
+    ex:'Caso real medido en producción: un sistema tiene dos escalas de tallas con los mismos nombres corridos un escalón (--border-radius-md=8px frente a --radius-md=6px), las dos vivas a la vez. Una colisión así no se ve en una revisión visual.'},
+   {l:'high',t:'Nombre idéntico, generado del mismo origen',
+    d:'Diseño y código salen del mismo pipeline; cada divergencia es una excepción registrada.'}]},
+ {k:'F',name:'Formalisation',q:'¿Dónde están escritas tus reglas?',
+  help:'Decisiones codificadas como contratos, no como guía informal.',
+  opts:[
+   {l:'low',t:'En la cabeza de alguien',
+    d:'Se transmiten por revisión de diseño. Nadie puede citar dónde dice que un botón deshabilitado no usa opacidad.'},
+   {l:'med',t:'En documentación en prosa',
+    d:'Está escrito, pero un agente no puede consultarlo sin interpretar.',
+    ex:'Caso real: un sistema con 120 estados de botón declarados explícitamente, y aun así ninguno es un contrato consultable — no se puede preguntar por un estado concreto sin leerlo todo.'},
+   {l:'high',t:'En contratos, y cada contrato declara sus excepciones',
+    d:'Versionado con política de deprecación. Una regla sin sus excepciones no previene el drift: lo produce.'}]},
+ {k:'E',name:'Enforcement',q:'¿Qué pasa si alguien escribe un color a mano?',
+  help:'Validación automática dentro del pipeline de entrega.',
+  opts:[
+   {l:'low',t:'Nada. Se descubre por casualidad',
+    d:'No hay check que falle. El drift aparece cuando alguien lo tropieza.',
+    ex:'Caso real: un token que no existía compiló sin error, pasó la revisión de código, llegó a producción y no pintó nada. Se descubrió semanas después, por casualidad.'},
+   {l:'med',t:'Hay lint de adherencia, pero no mide cobertura',
+    d:'Caza hardcode donde ya hay token, y es ciego a todo lo que ningún token cubre.',
+    ex:'Caso real medido en producción: 99,85% de adherencia con 59% de cobertura — el mismo sistema contando dos historias opuestas. Y un border-width:2 sin unidad nunca llega a pintar, y ningún linter de adherencia lo detecta.'},
+   {l:'high',t:'El merge se bloquea, con archivo:línea',
+    d:'Adherencia y cobertura se miden por separado, y hay tracking de adopción.'}]}
+];
+
+const MAP=[
+/* ═══ ARCO 1 · ANTES ═══════════════════════════════════════════════ */
+{arc:'before',ic:'🎯',t:'Propósito & intent',
+ goal:'Antes de decidir <b>cómo</b> documentar, defines <b>por qué</b> existe el sistema y para quién. Saltarse esto es el error que la literatura señala más: elegir formato antes de saber qué problema resuelve.',
+ out:'<b>Al terminar tienes:</b> una frase de propósito comprobable, la lista de quién consume el sistema, y el tipo de sistema decidido.',
+ partes:[
+ {t:'El problema que resuelve',
+  frame:'El dolor concreto que justifica que esto exista. Sin él, el sistema no tiene criterio para decir que no.',
+  pasos:[
+   ['Nombra el dolor con precisión','Escribe qué duele hoy, en concreto. <i>“Los botones no coinciden entre productos”</i> es un dolor. <i>“Queremos un design system”</i> no lo es: es una solución buscando un problema.'],
+   ['Conviértelo en una meta comprobable','Redáctalo en una frase que se pueda verificar. <i>“Que una pantalla nueva se arme sin inventar valores”</i> se comprueba. <i>“Mejorar la consistencia”</i> no: nadie sabe cuándo está logrado.'],
+   ['Escribe qué NO vas a resolver','Una lista explícita de lo que queda fuera. Sin ella, cada conversación agrega alcance y el sistema no termina nunca. Es la defensa contra el crecimiento infinito.']],
+  done:'Puedes explicarle a alguien de fuera, en dos frases, qué problema resuelve y qué no.'},
+ {t:'Qué formato recibe cada consumidor',
+  frame:'Quiénes son ya está fijado como premisa. Lo que sí hay que decidir es <b>quién pierde cuando se contradicen</b>: un diseñador quiere prosa con ejemplos y un agente quiere datos estructurados, y un mismo artefacto no puede optimizar los dos.',
+  pasos:[
+   ['Mapea cada consumidor a su formato','Para los tres: qué artefacto lee y en qué forma. Como el agente manda (premisa), la regla vive como dato consultable y la prosa es una <b>vista derivada</b> de ese dato — no al revés. Escribir prosa primero y exportarla después produce documentación que ningún agente puede consultar sin interpretar.']],
+  done:'Para cada consumidor sabes qué artefacto lee, y cuál de los dos formatos es la fuente y cuál la vista.'},
+ {t:'Qué tipo de sistema',
+  frame:'Decisiones de arquitectura muy caras de cambiar después. La de marcas ya está contestada arriba, en las premisas.',
+  pasos:[
+   ['¿Producto único o plataforma reutilizable?','Un sistema para un solo producto puede acoplarse a él sin culpa. Una plataforma no: cada acoplamiento se convierte en deuda el día que llega el segundo consumidor.'],
+   ['¿Web, móvil o multiplataforma?','Decide si los nombres de token necesitan un segmento de plataforma. Agregarlo después obliga a renombrar todo lo que ya existe, así que se decide ahora aunque solo haya una plataforma hoy.']],
+  done:'Las dos respuestas están escritas y nadie las va a reabrir sin un motivo nuevo.',
+  mb:'Al ser multibrand, la respuesta “una plataforma reutilizable” deja de ser opcional: varias marcas ya son varios consumidores.'}]},
+
+{arc:'before',ic:'📚',t:'Prior art / investigación',
+ goal:'Estudiar cómo otros ya resolvieron esto y, sobre todo, <b>en qué fallaron</b>. Los errores ajenos son más informativos que los aciertos, porque los aciertos suelen depender de contexto que tú no tienes.',
+ out:'<b>Al terminar tienes:</b> entre 5 y 10 sistemas evaluados con la misma rúbrica, una lista de principios que no vas a negociar, y una lista de anti-patrones que después alimenta el linter.',
+ partes:[
+ {t:'Auditar sistemas reales',
+  frame:'Aprender de sistemas maduros, mirando lo que hacen, no lo que dicen que hacen.',
+  pasos:[
+   ['Elige entre 5 y 10 sistemas de referencia','Que se parezcan al tuyo en escala y tipo de producto, no los más famosos. Un sistema de una empresa de 5.000 personas resuelve problemas que tú no tienes.'],
+   ['Evalúalos todos con la misma rúbrica','La misma para todos: cuántas capas de token, si hay contratos, si hay metadata para IA. Sin rúbrica común, la auditoría es una colección de opiniones que no se pueden comparar.'],
+   ['Anota qué copiar y qué evitar','Las dos listas importan por igual. Lo que decides evitar se convierte en tus anti-patrones, y esos son los que después puede revisar un linter automáticamente.']],
+  done:'Tienes una tabla comparativa, no un documento de impresiones.',
+  flag:'Aquí es donde se decide algo que condiciona todo el resto: <b>¿tienes acceso a esos sistemas en producción, o solo a su documentación pública?</b> Si solo tienes la documentación, todo lo que derives queda marcado como no verificado. La documentación pública y lo que corre en producción se separan más de lo que parece.'},
+ {t:'Leer teoría y estándares',
+  frame:'La base conceptual. Corta, pero determina el vocabulario de todo lo demás.',
+  pasos:[
+   ['Lee la literatura del área','Cómo se clasifica el propósito de la documentación, y cómo se trata la documentación como metadata en vez de como prosa. Es lo que evita que escribas un manual que ningún agente puede consultar.'],
+   ['Revisa los estándares abiertos','<code>llms.txt</code> como índice legible por máquina, DTCG como formato portable de tokens, MCP como forma de exponer el sistema a un agente. No hace falta adoptarlos hoy, sí saber que existen antes de inventar uno propio.'],
+   ['Extrae los principios que no vas a negociar','Tres o cuatro frases máximo. Son las que después usas para zanjar discusiones sin volver a discutir el fondo.']],
+  done:'Puedes citar de dónde sale cada principio que adoptaste.'},
+ {t:'Patrones y anti-patrones de nombres',
+  frame:'Los nombres son la interfaz del sistema. Un mal nombre sobrevive años porque renombrar es caro.',
+  pasos:[
+   ['Colecciona nombres buenos y malos','<code>bg-brand</code> dice para qué sirve. <code>blue-500</code> dice de qué color es. El segundo se rompe en cuanto el azul deja de ser azul, y en multibrand eso pasa siempre.'],
+   ['Fija tus reglas de nombrado','La regla base: el nombre dice la intención, no el valor. Escríbela con ejemplos de las dos formas para que no haya interpretación.'],
+   ['Documenta los anti-patrones','Escritos como reglas revisables, no como consejos. Es lo que después se convierte en un check automático que rechaza un nombre malo antes de que entre.']],
+  done:'Tienes una regla de nombrado escrita y una lista de lo que la viola.'}]},
+
+{arc:'before',ic:'🎨',t:'Fundamentos / primitivas',
+ goal:'La materia prima cruda: los valores concretos, antes de darles nombre semántico. Aquí solo se decide <b>qué valores existen</b>, no para qué se usan.',
+ out:'<b>Al terminar tienes:</b> las rampas de color validadas por contraste, las escalas de todo lo que no es color, y la semilla de identidad de cada marca.',
+ partes:[
+ {t:'Paleta de color',
+  frame:'Las rampas base. Es lo único de esta fase que es caro de rehacer, porque todo lo demás apunta aquí.',
+  pasos:[
+   ['Elige los tonos semilla','Uno por marca y uno por cada estado semántico (error, aviso, éxito, información). Son el punto de partida de cada rampa.'],
+   ['Genera rampas de N pasos','Cada semilla se expande en una escala completa de claro a oscuro. Un número fijo de pasos para todas: si cada rampa tiene una cantidad distinta, ninguna regla puede referirse a “el paso siguiente”.'],
+   ['Valida el contraste paso por paso','Comprueba WCAG en cada escalón y marca cuáles sirven para texto y cuáles no. Hacerlo ahora evita descubrir a mitad de un componente que el color que necesitas es ilegible.']],
+  done:'Cada rampa tiene el mismo número de pasos y sabes qué pasos son seguros para texto.',
+  mb:'En multibrand esto se complica: si las marcas eligen sus tonos del mismo conjunto de rampas, dos marcas pueden acabar chocando con un color semántico. Ese choque se resuelve en la fase 5, pero nace aquí.'},
+ {t:'Escalas base',
+  frame:'Todo lo que no es color — que es la mayor parte de lo que se ve en una pantalla.',
+  pasos:[
+   ['Define el espaciado','Una escala con una base coherente (múltiplos de 4 u 8). El espaciado es lo que más se improvisa y lo que más barato es tokenizar.'],
+   ['Define la tipografía','Familias y una escala de tamaños con su interlineado emparejado. Cada tamaño con su altura de línea fija: separarlos multiplica las combinaciones sin ganar nada.'],
+   ['Define radios, tamaños y puntos de corte','Radios de esquina, alturas de control, tamaños de icono, breakpoints. Valores crudos, sin decidir todavía qué componente usa cuál.']],
+  done:'Existe una escala para cada dimensión y ningún valor suelto fuera de ellas.'},
+ {t:'Identidad de las marcas',
+  frame:'Qué va a vestir el sistema. Aquí es donde el multibrand deja de ser teórico.',
+  pasos:[
+   ['Fija el color semilla de cada marca','El color que identifica a cada una. Anótalo con su origen: medido de un producto real es distinto de tomado de un manual de marca, y esa diferencia importa después.'],
+   ['Describe la personalidad de cada marca','Denso o aireado, serio o lúdico, esquinas duras o redondeadas. Escrito en palabras, porque es lo que te dice si un valor concreto “se siente” correcto para esa marca.'],
+   ['Reúne referencias reales de cada marca','Capturas de sus productos en producción. Son la evidencia contra la que después contrastas tus decisiones, y suelen contradecir lo que dice la documentación oficial.']],
+  done:'Cada marca tiene semilla, descripción y referencias reales guardadas.',
+  mb:'Con una sola marca esta parte es una línea. Con varias es donde descubres que las marcas no solo se ven distinto: <b>usan el color para cosas distintas</b>. Una puede usar su color de marca para el botón principal y otra no, y eso rompe la suposición más común de los design systems.'}]},
+
+{arc:'before',ic:'🧱',t:'Base estable',safe:'S',
+ goal:'Ordenar lo que existe antes de construir encima. <b>Desde cero esta fase se lee al revés:</b> no hay caos que limpiar, así que el trabajo es montar las reglas que impiden que el caos empiece.',
+ out:'<b>Al terminar tienes:</b> una regla escrita de dónde vive cada dato y ningún dato viviendo en dos sitios.',
+ partes:[
+ {t:'Auditoría estructural honesta',
+  frame:'Medir antes de decidir. Desde cero, medir lo que estás a punto de crear.',
+  pasos:[
+   ['Inventaria lo que existe','Desde cero es corto: las escalas de la fase 3 y poco más. Hazlo igual — es la línea base contra la que vas a comparar dentro de seis meses.'],
+   ['Mide duplicados e inconsistencias','Aunque hoy el número sea cero, define <b>cómo</b> se mide. La medición es lo que después se automatiza; si nunca la defines, nunca se automatiza.'],
+   ['Puntúa la madurez con una rúbrica','Sirve para saber en qué dimensión estás más débil y priorizar. Desde cero todo está débil, pero no todo por igual.']],
+  done:'Sabes cómo vas a medir el desorden, aunque todavía no haya desorden.',
+  flagR:'En retrofit esta fase <b>es el grueso del trabajo</b>, no un trámite: aquí vive el desorden real que hay que medir y reconciliar antes de construir encima. Es la razón de que tu ruta empiece por ella.',flag:'Desde cero, las tres partes de esta fase son <b>preventivas, no correctivas</b>. Es tentador saltárselas por eso. El coste de saltárselas no se paga ahora: se paga cuando aparece el primer duplicado y no hay regla que diga cuál gana.'},
+ {t:'Resolver desviaciones y deuda',
+  frame:'Reconciliar lo que divergió. Desde cero, impedir que diverja.',
+  pasos:[
+   ['Reconcilia duplicados y versiones','Cuando el mismo valor exista en dos sitios, decide cuál manda y elimina el otro. No lo dejes “por si acaso”: una copia que sobrevive se convierte en la fuente que alguien lee por error.'],
+   ['Actualiza o borra documentación caducada','La documentación que describe algo que ya no es verdad es peor que no tener documentación, porque se lee con confianza.'],
+   ['Consolida ramas y trabajo disperso','El trabajo que vive fuera de la rama principal es trabajo que puede perderse. Consolidar es más barato que recuperar.']],
+  done:'No hay dos sitios que respondan distinto a la misma pregunta.'},
+ {t:'Una sola fuente por hecho',
+  frame:'La regla estructural de la que dependen todas las demás.',
+  pasos:[
+   ['Decide dónde vive cada dato','Para cada tipo de información —valores de token, reglas, contratos— un único lugar. Escríbelo como tabla, no como acuerdo tácito.'],
+   ['Elimina las copias secundarias','Si un dato tiene que aparecer en dos sitios, uno de los dos se genera automáticamente del otro. Copiar a mano garantiza que van a divergir.'],
+   ['Documenta la regla explícitamente','“Una fuente por hecho” escrito, con el nombre de quién decide cuando hay duda. Sin dueño nombrado, la regla se erosiona sola.']],
+  done:'Para cualquier dato del sistema puedes señalar un único archivo como el que manda.'}]},
+
+{arc:'before',ic:'🔀',t:'Decisiones exploradas',safe:'A',
+ goal:'Las bifurcaciones grandes, exploradas hasta que dejen de moverse. Son decisiones que después el spec solo <b>registra</b>: si llegan al spec sin estar estables, el spec documenta una duda.',
+ out:'<b>Al terminar tienes:</b> el modelo de capas elegido y justificado, la gramática de nombres fijada, y el mecanismo de cambio de marca validado contra dos marcas reales.',
+ partes:[
+ {t:'Modelo de capas (tiers)',
+  frame:'Cuántos niveles de indirección hay entre un valor crudo y su uso.',
+  pasos:[
+   ['Prototipa dos o tres modelos','Por ejemplo: valor crudo → uso, frente a valor crudo → significado → uso. Escríbelos con casos reales, no en abstracto.'],
+   ['Prueba cada uno contra un caso real','Un componente con estados y variantes. Los modelos se ven todos bien hasta que un caso concreto pide algo que el modelo no expresa.'],
+   ['Elige y deja escrito por qué','El “por qué” es lo que evita reabrir la discusión cada trimestre. La regla que mejor funciona: <b>una capa intermedia existe solo si algo necesita reapuntarla</b>. Si nada la reapunta, sobra.']],
+  done:'Sabes cuántas capas tienes y puedes justificar cada una con un caso que la necesita.'},
+ {t:'Estrategia de nombres y derivación',
+  frame:'Cómo se llaman los tokens y de dónde sale su valor.',
+  pasos:[
+   ['Compara nombrar frente a derivar','Puedes escribir cada valor a mano, o escribir una regla que lo calcule (“un paso más oscuro que el de reposo”). Derivar es menos escritura y más consistencia, pero exige un compilador.'],
+   ['Decide si existen tokens por componente','Un token llamado <code>boton-fondo</code> parece cómodo, pero no es un token: es una nota de dónde se usa. La alternativa es que el componente apunte a un token general y esa relación se registre aparte.'],
+   ['Fija la gramática del nombre','Una estructura fija, por ejemplo <code>{rol}-{contexto}-{matiz}-{estado}</code>. Cuando la gramática es fija, un nombre mal formado se detecta automáticamente.']],
+  done:'Puedes decir si un nombre inventado es válido o no sin consultar a nadie.'},
+ {t:'Mecanismo multibrand',mbOnly:1,
+  frame:'Cómo cambia el sistema de una marca a otra. Es la parte que solo existe por ser multibrand, y la más fácil de resolver mal.',
+  pasos:[
+   ['Decide en qué capa ocurre el cambio','Cambiar de marca debe tocar <b>un solo archivo</b>. Si tocar de marca obliga a editar componentes, el sistema no es multibrand: son dos sistemas parecidos.'],
+   ['Resuelve los choques de color entre marca y estado','Si el color de una marca se parece al de “error”, hay que decidir qué pasa. La respuesta no depende de cuántos grados los separan, sino de dos preguntas: <b>¿el color de marca carga la acción principal?</b> y <b>¿cuánto cuesta confundir ese estado con la marca?</b> Confundir un error es caro; confundir un mensaje informativo, no.'],
+   ['Valida con dos marcas de prueba','Con una marca todo funciona. La segunda es la que revela qué suposiciones habías horneado sin darte cuenta.']],
+  done:'Cambiar de marca es cambiar un archivo, y sabes qué hacer cuando una marca choca con un estado.',
+  mb:'Toda esta parte desaparece en single-brand. Es una de las dos que se podan.'}]},
+
+/* ═══ ARCO 2 · EL SPEC ═════════════════════════════════════════════ */
+{arc:'spec',ic:'🏛️',t:'El Spec — la constitución',
+ goal:'Un documento corto que convierte lo explorado en <b>reglas escritas</b>. Fija las reglas y apunta a los contratos; no los contiene. Es lo que permite que otra persona —o un agente— construya igual que tú.',
+ out:'<b>Al terminar tienes:</b> el documento contra el que se resuelve cualquier discusión posterior. Todo lo que viene después es mecánico porque las reglas ya están fijas.',
+ partes:[
+ {t:'Alcance y no-objetivos',
+  frame:'Qué es el sistema y, sobre todo, qué no es.',
+  pasos:[
+   ['Escribe qué ES, en dos o tres frases','Si no cabe en tres frases, todavía no está decidido.'],
+   ['Lista los no-objetivos explícitamente','Cada uno con su motivo. Un no-objetivo sin motivo se reabre; con motivo, se respeta.'],
+   ['Define cuándo el sistema está terminado','Un criterio comprobable. En multibrand el natural es: <b>una pantalla real renderiza en todas las marcas cambiando solo el archivo de tema</b>.']],
+  done:'Alguien puede leer esta sección y saber si su petición está dentro o fuera.'},
+ {t:'Arquitectura de tokens',
+  frame:'Gramática, derivación y capas. Es la sección más larga y la que más se consulta.',
+  pasos:[
+   ['Documenta la gramática de nombres','La estructura fija, con la lista de valores válidos de cada segmento y qué pasa si algo no encaja en ella.'],
+   ['Documenta las reglas de derivación','Cómo se calcula un valor a partir de otro. Escritas de forma independiente de la marca: la regla dice “un paso más oscuro”, nunca un color concreto.'],
+   ['Haz la tabla de capas y cómo resuelven','Qué es cada capa y en qué orden se resuelve una hasta llegar al valor final.']],
+  done:'Un desarrollador puede añadir un token nuevo sin preguntar nada.'},
+ {t:'Roles y multibrand',
+  frame:'El conjunto de significados semánticos y cómo cambia el sistema de marca.',
+  pasos:[
+   ['Enumera los roles semánticos','Error, aviso, éxito, información, neutro, marca. Los nombres son los mismos en todas las marcas: lo que cambia es a qué apuntan.'],
+   ['Define el cambio de marca','En qué capa ocurre y qué contiene un archivo de tema. Aquí es donde aparece la pieza que más se olvida: <b>un alias</b>. El componente escribe “fondo principal” y nunca sabe si detrás hay un color de marca o un negro neutro, porque no todas las marcas usan su color para la acción principal.',{pill:'mbrand'}],
+   ['Fija la política de choques','Escrita como decisión, no como umbral numérico. Cuándo se desplaza un color y cuándo se acepta que dos convivan cerca.',{pill:'mbrand'}]],
+  done:'Un componente puede escribirse una vez y ser correcto en todas las marcas.',
+  mb:'Con una sola marca esta parte se reduce a “enumera los roles”. Los otros dos pasos no existen.'},
+ {t:'Esquema de contrato',
+  frame:'La forma que tiene todo contrato, sea de token o de componente.',
+  pasos:[
+   ['Define los campos obligatorios','Qué tiene que declarar cualquier contrato. Y la distinción clave: <b>qué se escribe a mano y qué se genera</b>. Si un dato aparece en las dos columnas, es un error de diseño, porque va a divergir.'],
+   ['Incluye un ejemplo completo','Un componente real, resuelto de principio a fin. Un esquema sin ejemplo se interpreta de cinco formas distintas.'],
+   ['Especifica composición y obsolescencia','Qué puede contener a qué, y cómo se marca algo como obsoleto indicando su reemplazo. <b>Un contrato también declara sus excepciones</b>: una regla sin sus excepciones documentadas no evita las desviaciones, las produce, porque la primera excepción real no tiene dónde vivir.']],
+  done:'Puedes escribir un contrato nuevo copiando el ejemplo y cambiando lo que aplica.'},
+ {t:'Fallos y control automático',
+  frame:'Cómo se evita que el sistema se degrade sin que nadie lo note.',
+  pasos:[
+   ['Lista los modos de fallo conocidos','Qué se rompe en la práctica. Los cuatro más comunes: valores escritos a mano, tokens que existen pero nadie usa, tokens con formato inválido que nunca llegan a pintar nada, y reglas que quedaron obsoletas pero siguen en el código.'],
+   ['Asigna a cada fallo una comprobación automática','Un fallo sin comprobación es una intención. Ojo con medir una sola cosa: <b>un sistema puede tener 99% de cumplimiento y aun así cubrir solo la mitad de lo que debería</b>. Son dos métricas distintas y una sola esconde la otra.'],
+   ['Define qué bloquea una integración','La línea entre aviso y bloqueo. Si nada bloquea, las reglas son sugerencias.']],
+  done:'Cada fallo conocido tiene una comprobación que lo detecta, y sabes cuáles bloquean.'},
+ {t:'Plan de entrega',
+  frame:'Cómo llega el sistema a las personas y a los agentes.',
+  pasos:[
+   ['Clasifica cada contenido por su propósito','Una regla que siempre aplica no se entrega igual que una referencia que se consulta a demanda, ni que un procedimiento paso a paso. El propósito decide el mecanismo, y el mecanismo decide el formato — en ese orden.'],
+   ['Ordena las fases de entrega','Primero un índice legible por máquina, porque cuesta casi nada. Después un servicio consultable, que es lo que evita duplicar la información para cada consumidor. Al final los procedimientos, que solo tienen sentido cuando ya existe algo que consultar.'],
+   ['Define el mínimo viable de entrega','Lo más pequeño que sirva de verdad. Se elige con la evidencia de qué necesitó consultar alguien para construir la primera pantalla, no antes.']],
+  done:'Sabes qué se entrega, en qué orden y por qué.'},
+ {t:'Metodología de construcción',
+  frame:'En qué orden se construye. Es la parte que evita que el sistema crezca a lo ancho sin nada que lo valide.',
+  pasos:[
+   ['Fija el orden: por pantalla, de lo pequeño a lo grande','Un token existe cuando una pantalla lo pide. No antes. Definir por adelantado todo lo que “podría hacer falta” produce mucha teoría sin nada que la confirme.'],
+   ['Define la pantalla como criterio de aceptación','Una pantalla terminada es la prueba de que el sistema funciona. En multibrand, la prueba no es que se vea bien: es <b>qué se rompe al cambiar de marca</b>.',{pill:'mbrand'}],
+   ['Elige la pantalla número uno','La que más piezas distintas ejercite con menos superficie. Un formulario de acceso suele ser buena: tiene control con relleno, control con borde, texto jerárquico y varios estados.']],
+  done:'Sabes qué vas a construir primero y cómo sabrás si funcionó.'}]},
+
+/* ═══ ARCO 3 · DESPUÉS ═════════════════════════════════════════════ */
+{arc:'after',ic:'🧩',t:'Cerrar la superficie de tokens',
+ goal:'Poner nombre a todo lo que una pantalla va a consumir, para que nadie tenga que escribir un valor a mano. <b>Solo lo que la pantalla número uno pide.</b>',
+ out:'<b>Al terminar tienes:</b> los tokens que la primera pantalla necesita, todos siguiendo la gramática, y ninguno de más.',
+ partes:[
+ {t:'Cerrar los huecos de color',
+  frame:'Los sitios que consumen un color y todavía no tienen token.',
+  pasos:[
+   ['Lista los huecos','Recorre la pantalla objetivo y anota cada color que se usa sin token: el aro de foco, el color de un icono, el borde de un campo desactivado. Suelen ser más de los que esperas.'],
+   ['Nómbralos siguiendo la gramática','Si un color no se puede expresar con la gramática, hay dos respuestas válidas: reusar un token que ya existe, o aceptar que eso no es un token de color. Inventar una excepción no está en la lista.'],
+   ['Añádelos a las reglas y valida contraste','Cada token nuevo se define como regla derivada, no como valor suelto, y se comprueba su contraste contra la superficie más oscura donde puede caer — no contra blanco.']],
+  done:'La pantalla objetivo no necesita ningún color que no tenga nombre.'},
+ {t:'Abrir los espacios de nombres de disposición',
+  frame:'Espaciado, tamaños, radios y tipografía. Lo que no es color.',
+  pasos:[
+   ['Abre los espacios de nombres','Crea las familias que la pantalla necesita. Solo las familias, no todos sus valores.'],
+   ['Puebla solo lo que la pantalla pide','Si la pantalla usa tres alturas de control, defines tres. Las otras dos esperan a que algo las pida.'],
+   ['Conéctalos con las escalas base','Cada token apunta a un valor de las escalas de la fase 3. Ningún valor nuevo aparece en este paso: si hace falta uno, es señal de que la escala base estaba incompleta.']],
+  done:'Todo lo que la pantalla dimensiona sale de un token, y todos apuntan a la escala base.'},
+ {t:'Definir acentos y colores de datos',
+  frame:'Los colores que no son ni de marca ni de estado.',
+  pasos:[
+   ['Asigna las rampas sobrantes a acentos','Las rampas que no tienen rol semántico se agrupan como acentos numerados. Numerados, no descriptivos: un acento no significa nada por sí mismo.'],
+   ['Define alias si hacen falta','Nombres como “novedad” o “promoción” que apuntan a un acento. El alias puede cambiar de acento sin tocar los componentes.'],
+   ['Documenta que son categóricos','Un acento distingue, no comunica. Si empieza a significar algo concreto, deja de ser acento y pasa a ser un rol semántico.']],
+  done:'Los colores sin rol están agrupados y documentados como lo que son.',
+  flagR:'En retrofit lo más probable es lo contrario: <b>ya tienes colores sin rol asignado</b>, heredados y usados en sitios que nadie recuerda. Aquí se agrupan y se decide cuáles sobreviven.',flag:'Desde cero y con el método por pantalla, <b>lo más probable es que esta parte quede vacía</b>. Un formulario de acceso no pide acentos. Que quede vacía es el resultado correcto: significa que el método funcionó.'}]},
+
+{arc:'after',ic:'📋',t:'Autorar contratos',safe:'F',
+ goal:'Escribir el contrato de cada componente que la pantalla necesita. <b>El contrato se escribe antes que el componente</b>: al revés se produce desviación desde el primer día.',
+ out:'<b>Al terminar tienes:</b> para cada componente, su ficha técnica, el mapeo de cada parte a su token, y sus reglas de composición.',
+ partes:[
+ {t:'Ficha técnica — la interfaz',
+  frame:'Lo que el componente ofrece hacia fuera.',
+  pasos:[
+   ['Declara variantes, estados y partes','Qué formas tiene, en qué estados puede estar, y qué zonas internas tiene. Es el vocabulario con el que todo lo demás se refiere a él.'],
+   ['Añade la información de accesibilidad','Rol, comportamiento con teclado, y los contrastes medidos de verdad, no supuestos. Medirlos ahora es barato; descubrirlos en auditoría, no.'],
+   ['Añade guía de uso, cuándo no usarlo y pistas para agentes','Cuándo sí, cuándo no y qué error comete la gente con él. Esta es la parte que un agente lee para no usar el componente equivocado.']],
+  done:'Alguien que nunca vio el componente sabe qué puede pedirle.'},
+ {t:'Recetas — de la parte al token',
+  frame:'El enlace concreto entre el componente y el sistema de tokens.',
+  pasos:[
+   ['Mapea cada parte a su token, estado por estado','Fondo en reposo, fondo al pasar el ratón, fondo al pulsar, texto, borde. Explícito para cada estado: un estado sin mapeo se improvisa en el código.'],
+   ['Añade excepciones por condición','Cuando algo cambia en modo oscuro o en una marca concreta, se declara como excepción con su condición, no como una rama distinta del componente.'],
+   ['Reutiliza recetas entre componentes','Si dos componentes se comportan igual, comparten receta. Duplicarla garantiza que un día una se actualice y la otra no.']],
+  done:'Ninguna zona del componente queda sin token en ningún estado.'},
+ {t:'Composición y obsolescencia',
+  frame:'Qué puede contener a qué, y cómo se retira algo sin romper a quien lo usa.',
+  pasos:[
+   ['Define qué puede contener y qué no','Y hasta qué profundidad. Sin esta regla, alguien va a anidar el componente dentro de sí mismo y va a funcionar hasta que no.'],
+   ['Añade el bloque de obsolescencia','Desde qué versión está obsoleto y cuál es su reemplazo. Marcar algo obsoleto sin indicar reemplazo deja a la gente atascada.'],
+   ['Enlaza la migración automática','Si existe una transformación que actualiza el código automáticamente, enlázala desde el contrato. Es la diferencia entre una obsolescencia que se aplica y una que se ignora.']],
+  done:'Retirar el componente en el futuro no requiere arqueología.'}]},
+
+{arc:'after',ic:'⚙️',t:'Compilar',
+ goal:'Generar todo lo que se puede derivar. <b>Nada se escribe dos veces.</b> Es la pieza que hace verdadera la separación entre lo que se escribe a mano y lo que se calcula.',
+ out:'<b>Al terminar tienes:</b> el valor final de cada token para cada marca y modo, generado — no escrito.',
+ partes:[
+ {t:'Índice de reglas',
+  frame:'Convertir las recetas en algo que se pueda consultar puntualmente.',
+  pasos:[
+   ['Genera el índice a partir de las recetas','Un listado donde cada regla es consultable por sí sola. Es lo que permite que un agente pregunte por un caso concreto sin leer el sistema entero.'],
+   ['Verifica la cobertura','Comprueba que toda regla declarada existe en el índice. Un hueco aquí es una regla que nadie va a poder consultar y que por tanto no existe en la práctica.'],
+   ['Expón el índice a los consumidores','Publicado donde lo puedan leer diseño, desarrollo y los agentes. Un índice que solo existe en el repositorio del sistema sirve a una sola persona.']],
+  done:'Cualquier regla del sistema se puede consultar de forma aislada.'},
+ {t:'Exportación estándar',
+  frame:'Sacar los tokens en formatos que otras herramientas entienden.',
+  pasos:[
+   ['Configura la exportación','Un proceso automático que corre en cada cambio. Exportar a mano significa que un día alguien olvida hacerlo.'],
+   ['Emite los formatos que consumen tus herramientas','Formato estándar de tokens, variables de CSS, o lo que use tu base de código. Todos generados de la misma fuente.'],
+   ['Versiona la salida','Para que quien la consume sepa qué cambió entre una versión y otra sin comparar archivos a mano.']],
+  done:'Otras herramientas consumen tus tokens sin que nadie copie nada.'},
+ {t:'Variables de la herramienta de diseño',
+  frame:'Que diseño y código digan lo mismo con las mismas palabras.',
+  pasos:[
+   ['Genera las variables con nombre idéntico','El mismo nombre exacto en la herramienta de diseño y en el código. Si difieren, alguien tiene que traducir, y traducir a mano es donde nacen las divergencias.'],
+   ['Crea un modo por marca','Cambiar de marca en el archivo de diseño debe ser tan fácil como en el código. Si en diseño no se puede probar, el cambio de marca se prueba tarde.',{pill:'mbrand'}],
+   ['Sincroniza en cada publicación','Automático. Una sincronización manual se salta en la primera semana con prisa.']],
+  done:'Un token cambia en un sitio y aparece cambiado en diseño y en código.',
+  mb:'Los modos por marca solo existen porque hay varias marcas. Con una, este paso desaparece.'}]},
+
+{arc:'after',ic:'🛡️',t:'Control automático',safe:'E',
+ goal:'Comprobaciones que bloquean una integración cuando algo rompe las reglas. Convierten las reglas de guía en infraestructura.',
+ out:'<b>Al terminar tienes:</b> comprobaciones que fallan solas cuando alguien se salta el sistema, con el archivo y la línea del problema.',
+ partes:[
+ {t:'Revisión de tokens',
+  frame:'Cazar valores escritos a mano.',
+  pasos:[
+   ['Detecta colores y medidas escritos a mano','Busca valores literales donde debería haber un token. Es la comprobación más simple y la que más devuelve.'],
+   ['Bloquea la integración si hay incumplimientos','Si solo avisa, se ignora. El bloqueo es lo que convierte la regla en real.'],
+   ['Informa con archivo y línea','Un aviso que no dice dónde está el problema hace que la gente desactive la comprobación.']],
+  done:'Es imposible integrar un valor escrito a mano sin que alguien lo apruebe explícitamente.'},
+ {t:'Revisión de contratos',
+  frame:'Que el código y el contrato digan lo mismo.',
+  pasos:[
+   ['Compara la receta contra lo que el componente pinta de verdad','El contrato dice que el fondo usa cierto token; comprueba que en el render sea así. Es la única forma de detectar que el código se separó del contrato.'],
+   ['Verifica que las reglas usadas existan en el índice','Un componente que usa una regla que no está indexada está usando algo que nadie más puede consultar.'],
+   ['Falla cuando aparezca una desviación','Y con contexto suficiente para arreglarla. Una desviación detectada tarde ya se copió a otros sitios.']],
+  done:'El contrato y el código no pueden separarse en silencio.'},
+ {t:'Prueba de cambio de marca',mbOnly:1,
+  frame:'La comprobación específica del multibrand, y la más dura del sistema.',
+  pasos:[
+   ['Renderiza cada componente en cada marca','Automático, no a ojo. A ojo se revisa la primera vez y nunca más.',{pill:'mbrand'}],
+   ['Comprueba que no se filtre ningún nombre de marca','Ni en el código, ni en los nombres de clase, ni en los de token. Un nombre de marca filtrado es una bomba de relojería: funciona hasta que llega la tercera marca.',{pill:'mbrand'}],
+   ['Guarda una captura por marca','Para que un cambio que afecte solo a una marca se vea en la comparación en vez de descubrirse en producción.',{pill:'mbrand'}]],
+  done:'Ningún cambio puede romper una marca sin que la comprobación lo diga.',
+  mb:'Esta parte entera se poda en single-brand. Es la segunda de las dos.'}]},
+
+{arc:'after',ic:'🔨',t:'Construir componentes',
+ goal:'Implementar los componentes leyendo <b>solo tokens</b>. De lo más pequeño a lo más grande.',
+ out:'<b>Al terminar tienes:</b> los componentes que la pantalla necesita, sin un solo valor escrito a mano.',
+ partes:[
+ {t:'Piezas indivisibles',
+  frame:'Botón, campo, etiqueta. Lo que no se puede descomponer más.',
+  pasos:[
+   ['Elige solo las que la pantalla necesita','Tres o cuatro. La tentación de construir la biblioteca entera es fuerte y es exactamente lo que el método evita.'],
+   ['Impleméntalas leyendo solo tokens','Ni un color, ni una medida escrita directamente. Si hace falta un valor que no tiene token, para y anótalo: es información sobre lo que faltaba, no un trámite.'],
+   ['Comprueba que pasan el cambio de marca','Cada pieza, por separado, antes de componer nada. Un fallo detectado en la pieza es barato; el mismo fallo detectado en la pantalla cuesta encontrarlo primero.',{pill:'mbrand'}]],
+  done:'Cada pieza funciona en todas las marcas sin saber en cuál está.'},
+ {t:'Combinaciones',
+  frame:'Piezas compuestas en unidades mayores.',
+  pasos:[
+   ['Compón las piezas ya construidas','Sin crear piezas nuevas por el camino. Si hace falta una, vuelve al paso anterior en vez de improvisarla aquí.'],
+   ['Reutiliza los contratos existentes','Una combinación no necesita contrato propio si solo compone. Solo lo necesita cuando añade comportamiento que sus partes no tienen.'],
+   ['Verifica que la composición sea legal','Contra las reglas de qué puede contener a qué. Es donde se detecta el anidamiento que no debería existir.']],
+  done:'Las combinaciones no introdujeron ningún valor nuevo.'},
+ {t:'La regla de oro en el código',
+  frame:'Lo que impide que el sistema se erosione desde dentro.',
+  pasos:[
+   ['Prohíbe valores y marcas en el código','Como regla de construcción, no como acuerdo. Un acuerdo dura hasta la primera urgencia.'],
+   ['Consume los tokens por el mecanismo del tema','Variables o tema, nunca importando valores directamente. Importar el valor rompe el cambio de marca en silencio: sigue compilando y deja de cambiar.',{pill:'mbrand'}],
+   ['Documenta que las propiedades son el contrato','Lo que el componente acepta es exactamente lo que su contrato declara. Si acepta algo que el contrato no menciona, el contrato está incompleto.']],
+  done:'Un valor escrito a mano no puede entrar sin que la comprobación lo rechace.'}]},
+
+{arc:'after',ic:'🖥️',t:'Ensamblar la pantalla',
+ goal:'Componer una pantalla real. Es el criterio de terminado del sistema: hasta aquí todo era teoría comprobable solo en abstracto.',
+ out:'<b>Al terminar tienes:</b> una pantalla funcionando y la lista de todo lo que hubo que añadir para lograrlo.',
+ partes:[
+ {t:'Componer',
+  frame:'Armar la pantalla con lo que ya existe.',
+  pasos:[
+   ['Toma una referencia real','Una captura de una pantalla que exista de verdad, no un diseño inventado para la ocasión. Una pantalla inventada evita justo los casos incómodos.'],
+   ['Identifica qué componentes la forman','Antes de escribir nada. Si aparece uno que no construiste, decide conscientemente si lo construyes o si cambias de pantalla.'],
+   ['Compón la pantalla','Solo composición. Si hace falta un token nuevo, <b>para y anótalo</b>: anotar no es implementar, y esa lista es el resultado más valioso de esta fase.']],
+  done:'La pantalla renderiza y existe la lista de lo que hubo que añadir.'},
+ {t:'Verificar en cada marca',
+  frame:'El momento de la verdad del multibrand.',
+  pasos:[
+   ['Cambia de marca','Solo el archivo de tema. Si tienes que tocar cualquier otra cosa, ahí está el fallo, y encontrarlo es el objetivo.',{pill:'mbrand'}],
+   ['Confirma que se redibuja bien sin tocar código','Y anota todo lo que no. <b>Un cambio de marca sin nada roto es una prueba que no midió nada</b>: casi siempre significa que las dos marcas eran demasiado parecidas para revelar suposiciones.',{pill:'mbrand'}],
+   ['Ajusta tokens si algo se rompe','Tokens, no componentes. Si arreglarlo exige tocar el componente, el problema está en la capa de tokens y arreglarlo arriba solo lo esconde.',{pill:'mbrand'}]],
+  done:'Sabes exactamente qué se rompe al cambiar de marca y por qué.',
+  mb:'Esta parte es la razón de ser del multibrand. Sin ella el sistema solo <i>parece</i> multimarca.'},
+ {t:'Contrastar con la referencia',
+  frame:'Fidelidad a lo que se quería construir.',
+  pasos:[
+   ['Compara lado a lado','La pantalla construida contra la referencia real, a la vez y en la misma pantalla. De memoria no se detectan las diferencias pequeñas.'],
+   ['Anota las divergencias','Cada una con su causa: falta un token, la escala no llega, o la referencia hacía algo que tu sistema decide no hacer. Las tres son respuestas válidas y distintas.'],
+   ['Itera hasta que coincida o esté justificado','No toda divergencia se arregla. Algunas se documentan como decisión deliberada, y eso también es un resultado.']],
+  done:'Cada diferencia con la referencia está arreglada o justificada por escrito.'}]},
+
+{arc:'after',ic:'🤖',t:'Entrega para agentes',
+ goal:'Exponer el sistema para que un agente pueda armar la <b>siguiente</b> pantalla. Hasta aquí el sistema era consumible por personas; esto lo hace consumible por máquinas.',
+ out:'<b>Al terminar tienes:</b> el sistema consultable por un agente sin pegarle documentación en el mensaje.',
+ partes:[
+ {t:'Reglas siempre activas e índice',
+  frame:'Lo más barato y lo que más rinde. Se hace primero por eso.',
+  pasos:[
+   ['Escribe el archivo de reglas permanentes','Las restricciones que siempre aplican y el encuadre de por qué el sistema es como es. Es lo que un agente lee en cada sesión sin que se lo pidas.'],
+   ['Escribe el índice legible por máquina','Un archivo corto que dice qué hay y dónde. Cuesta una hora y evita que un agente busque a ciegas.'],
+   ['Repasa contra una lista de comprobación','Existen listas públicas de qué debe exponer un sistema para ser consumible por IA. Úsalas en vez de deducirlo.']],
+  done:'Un agente que abre el proyecto sabe qué existe sin que le expliques nada.'},
+ {t:'Servicio consultable',
+  frame:'El corazón de la entrega: información a demanda en vez de pegada en el mensaje.',
+  pasos:[
+   ['Define qué se puede preguntar','Resolver un token, obtener el contrato de un componente, listar excepciones. Operaciones concretas, no “consultar la documentación”.'],
+   ['Conéctalo a las fuentes reales','A las recetas y las reglas, no a una copia. Una copia se desactualiza y responde con confianza cosas que ya no son verdad.'],
+   ['Pruébalo con un agente de verdad','Pídele que construya algo pequeño y observa qué consulta y qué no encuentra. Lo que no encuentra es tu lista de huecos.']],
+  done:'Un agente construye consultando el sistema en vez de recibiéndolo entero.'},
+ {t:'Procedimientos',
+  frame:'Los pasos para tareas repetibles. Van al final porque solo tienen sentido si ya hay qué consultar.',
+  pasos:[
+   ['Empaqueta los procedimientos','“Generar un componente nuevo”, “revisar una pantalla”. Pasos concretos, con sus comprobaciones.'],
+   ['Distribúyelos','Por el mismo mecanismo con el que distribuyes cualquier otra dependencia, para que se puedan versionar como tal.'],
+   ['Versiónalos','Un procedimiento sin versión no se puede actualizar sin romper a quien lo usaba.']],
+  done:'Las tareas repetidas se hacen igual sin que nadie recuerde cómo.'}]},
+
+{arc:'after',ic:'🔁',t:'Gobernar y evolucionar',
+ goal:'Cambiar el sistema sin romper a quien lo consume. <b>Desde cero esta fase todavía no está viva</b>: no se gobierna un sistema sin consumidores. Se activa con la segunda pantalla.',goalR:'Cambiar el sistema sin romper a quien lo consume. <b>En retrofit esta fase está viva desde el primer día</b>: ya tienes gente usando el sistema, así que cada cambio puede romperle algo a alguien.',
+ out:'<b>Al terminar tienes:</b> una forma de cambiar el sistema que no obliga a nadie a parar.',
+ partes:[
+ {t:'Obsolescencia y migración automática',
+  frame:'Retirar cosas dejando un camino de salida.',
+  pasos:[
+   ['Marca lo obsoleto con su reemplazo','Nunca sin reemplazo. Marcar algo obsoleto sin decir qué usar en su lugar deja a la gente parada y hace que ignoren la marca.'],
+   ['Escribe la transformación automática','El script que actualiza el código de quien lo usa. Es la diferencia entre una migración que ocurre y una que se pospone tres años.'],
+   ['Comunica el cambio','Por un canal que la gente lea de verdad. Un cambio comunicado solo en el registro de cambios no está comunicado.']],
+  done:'Nadie se queda atascado en algo que retiraste.'},
+ {t:'Seguimiento de uso',
+  frame:'Migrar con datos en vez de con suposiciones.',
+  pasos:[
+   ['Escanea las aplicaciones que lo consumen','Para saber qué se usa de verdad. Casi siempre sorprende: lo que creías central está sin usar y lo que creías marginal está en todas partes.'],
+   ['Genera un informe de uso','Automático y repetible. Un recuento manual se hace una vez.'],
+   ['Prioriza las migraciones con esos datos','Empezando por lo más usado o por lo más roto, pero decidido con números y no con intuición.']],
+  done:'Sabes qué se usa antes de decidir qué cambiar.'},
+ {t:'Revisión periódica y versionado',
+  frame:'Salud continua en vez de auditorías de rescate.',
+  pasos:[
+   ['Programa la revisión','Recurrente y automática. Una revisión que depende de que alguien se acuerde ocurre cuando ya hay un problema.'],
+   ['Versiona con una política de obsolescencia','Reglas claras de qué constituye un cambio que rompe y cuánto tiempo sobrevive lo obsoleto antes de desaparecer.'],
+   ['Mantén el registro de cambios','Legible por personas y por máquinas. Es lo que permite a un agente saber qué cambió desde la última vez que consultó.']],
+  done:'El sistema se mantiene sano sin campañas de limpieza.'}]}
+];
+
+
+const LATER=[
+ ['¿Web, móvil o multiplataforma?','fase 1 · Qué tipo de sistema','ya es un paso'],
+ ['¿Un agente es cliente de 1ª clase?','fase 1 · Quién lo consume','ya es un paso'],
+ ['¿Tienes acceso a las marcas en producción?','fase 2 · Auditar sistemas reales','fija el estándar de evidencia'],
+ ['¿Hay dark mode?','fase 3 · Escalas base','decide si existen surface y el eje neutral'],
+ ['¿Palette compartido o propio por marca?','fase 5 · Mecanismo multibrand','solo si multibrand'],
+ ['¿Hay consumidores hoy?','fase 14 · Gobernar','decide si la fase está viva']
+];
+
+/* Lo que single-brand poda del modelo de 138 pasos. Contado, no estimado. */
+const PRUNE={
+ cut:[['fase 5 · Mecanismo multibrand','3 pasos — en qué capa ocurre el swap, colisiones de hue, validar con 2 marcas'],
+      ['CI · Brand-swap test','3 pasos — render por marca, cero fuga de nombre de marca, snapshot por marca']],
+ red:[['SPEC · Roles & multibrand','pierde “define el brand-swap” y “fija la política de colisión”; queda “enumera los roles”'],
+      ['fase 3 · Identidad de marca(s)','una semilla en vez de una por marca'],
+      ['Compilar · Variables de Figma','sin “crea modes por marca”']]
+};
+
+const S={route:null,brands:null,safe:{}};
+const LV={low:0,med:1,high:2}, LVN={low:'Low',med:'Medium',high:'High'};
+const stage=document.getElementById('stage'), rail=document.getElementById('rail');
+let step=0;
+
+function railDraw(total,cur){
+  rail.innerHTML='';
+  for(let i=0;i<total;i++){const d=document.createElement('div');
+    d.className=i<cur?'done':(i===cur?'on':'');rail.appendChild(d);}
+}
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ── el mapa detallado, filtrado por las respuestas ────────────────── */
+const ARCC={before:'var(--before)',spec:'var(--spec)',after:'var(--after)'};
+
+/* Con una sola marca desaparecen las partes multibrand y los pasos marcados. */
+function partesDe(f){
+  const sb = S.brands==='single';
+  return f.partes
+    .filter(p=>!(sb && p.mbOnly))
+    .map(p=>({...p, pasos:p.pasos.filter(s=>!(sb && (s[2]||{}).pill==='mbrand'))}));
+}
+
+function fase(f,i){
+  const retro = S.route==='retrofit', sb = S.brands==='single';
+  const ps = partesDe(f), col = ARCC[f.arc];
+  const ns = ps.reduce((a,p)=>a+p.pasos.length,0);
+  const goal = (retro && f.goalR) ? f.goalR : f.goal;
+
+  let h=`<details class="fase${f.pri?' pri':''}"><summary>
+      <span class="fnum" style="background:${col}">${i+1}</span>
+      <span class="fico">${f.ic}</span>
+      <span class="ftitle">${f.t}</span>
+      ${f.tag?`<span class="why">${f.tag}</span>`:''}
+      <span class="fmeta">${ps.length} · ${ns} pasos</span>
+      <span class="chev">▶</span></summary>
+    <div class="fbody"><p class="goal">${goal}</p><div class="outb">${f.out}</div>`;
+
+  ps.forEach(p=>{
+    h+=`<details class="parte"><summary>
+        <span class="pdot" style="background:${col}"></span>
+        <span class="ptitle">${p.t}</span>
+        <span class="fmeta">${p.pasos.length} pasos</span>
+        <span class="chev">▶</span></summary>
+      <div class="pbody"><p class="pframe">${p.frame}</p><ol class="pasos">`;
+    p.pasos.forEach(s=>{
+      const o=s[2]||{};
+      h+=`<li><div><div class="sT">${s[0]}${
+        o.pill==='mbrand'?'<span class="mpill mbrand">multibrand</span>':
+        o.pill==='pre'?'<span class="mpill pre">ya respondida</span>':''
+      }</div><div class="sD">${s[1]}</div></div></li>`;
+    });
+    h+=`</ol>`;
+    if(p.done)h+=`<div class="nb done"><b>Terminas cuando:</b> ${p.done}</div>`;
+    if(p.mb && !sb)h+=`<div class="nb mbn"><b>Por ser multibrand:</b> ${p.mb}</div>`;
+    const fl = retro ? p.flagR : p.flag;
+    if(fl)h+=`<div class="nb flg"><b>${retro?'En retrofit':'Desde cero'}:</b> ${fl}</div>`;
+    h+=`</div></details>`;
+  });
+  return h+`</div></details>`;
+}
+
+/* ── pantallas ─────────────────────────────────────────────────────── */
+function render(){
+  const totalSteps = S.route==='retrofit' ? 6 : 2;
+  railDraw(totalSteps, step);
+
+  /* 0 · ruta — reordena */
+  if(step===0){
+    stage.innerHTML=`
+    <div class="card">
+      <div class="eyebrow"><span class="pill">1 de ${totalSteps}</span> reordena el mapa</div>
+      <h2>¿Ya existe un design system, o arrancas de cero?</h2>
+      <p class="q-help">Es la única pregunta que cambia <b>la fase 1 misma</b>. Por eso va
+        primero.</p>
+      <div class="opts">
+        <button class="opt ${S.route==='greenfield'?'sel':''}" data-v="greenfield">
+          <b>Desde cero</b>
+          <span>No hay DS previo, o el que hay se va a deprecar completo.</span>
+          <span class="ex">Arrancas clasificando intent: para qué existe el sistema y quién lo consume.</span></button>
+        <button class="opt ${S.route==='retrofit'?'sel':''}" data-v="retrofit">
+          <b>Ya existe uno en producción</b>
+          <span>Hay DS legacy que no se puede pausar.</span>
+          <span class="ex">Arrancas inventariando lo que ya hay. Las fases A y B pasan a ser refactors dirigidos, no bootstrap.</span></button>
+      </div>
+      ${S.route==='greenfield'?`<div class="note"><b>Al elegir “desde cero”, la pregunta de
+        madurez SAFE no aplica</b> — clasificar el sistema actual no tiene sentido cuando no
+        hay sistema actual. En el roadmap esa puerta está numerada primero; es el error que
+        ADR-022 corrige.</div>`:''}
+      <div class="nav">
+        <button class="act" id="next" ${!S.route?'disabled':''}>Continuar</button>
+      </div>
+    </div>`;
+    stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      S.route=b.dataset.v; if(S.route==='greenfield')S.safe={}; render();});
+    const n=stage.querySelector('#next');
+    if(n)n.onclick=()=>{step=1;render();};
+    return;
+  }
+
+  /* 1 · marcas — poda */
+  if(step===1){
+    const sb=S.brands==='single';
+    stage.innerHTML=`
+    <div class="card">
+      <div class="eyebrow"><span class="pill">2 de ${totalSteps}</span> poda ramas del mapa</div>
+      <h2>¿El sistema va a vestir una marca o varias?</h2>
+      <p class="q-help">No cambia el orden: cambia <b>qué fases existen</b>. Por eso tiene que
+        contestarse antes de dibujar nada.</p>
+      <div class="opts">
+        <button class="opt ${sb?'sel':''}" data-v="single">
+          <b>Una sola marca</b>
+          <span>Un producto, una identidad. Puede haber modos (light/dark) pero no temas de marca.</span>
+          <span class="ex">Se podan 2 partes completas y 15 pasos: el mecanismo de swap y el brand-swap test dejan de existir.</span></button>
+        <button class="opt ${S.brands==='multi'?'sel':''}" data-v="multi">
+          <b>Varias marcas</b>
+          <span>El mismo sistema viste a más de un producto o identidad.</span>
+          <span class="ex">Aparecen la capa de alias, la política de colisión de hue y el brand-swap test como criterio de aceptación.</span></button>
+      </div>
+      ${sb?`<div class="note"><b>Ojo con la puerta de salida.</b> Pasar de single a multibrand
+        después no es agregar un tema: obliga a revisar si los nombres de token siguen siendo
+        ciertos. <code>brand-bg-default</code> como botón primario es una asunción que se rompe
+        en cuanto una segunda marca no usa su color de marca para la acción.</div>`:''}
+      <div class="nav">
+        <button class="ghost act" id="back">Atrás</button>
+        <button class="act" id="next" ${!S.brands?'disabled':''}>
+          ${S.route==='retrofit'?'Continuar':'Ver mi mapa'}</button>
+      </div>
+    </div>`;
+    stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      S.brands=b.dataset.v;render();});
+    stage.querySelector('#back').onclick=()=>{step=0;render();};
+    const n=stage.querySelector('#next');
+    if(n)n.onclick=()=>{step = S.route==='retrofit' ? 2 : 99; render();};
+    return;
+  }
+
+  /* 2..5 · SAFE observables (solo retrofit) */
+  if(step>=2&&step<=5){
+    const d=SAFE[step-2];
+    stage.innerHTML=`
+    <div class="card">
+      <div class="eyebrow"><span class="pill">${step+1} de ${totalSteps}</span>
+        madurez ${step-1}/4 · ${d.k} — ${d.name}</div>
+      <h2>${d.q}</h2>
+      <p class="q-help">${d.help}</p>
+      <div class="opts">
+        ${d.opts.map((o,i)=>`
+        <button class="opt ${S.safe[d.k]===o.l?'sel':''}" data-v="${o.l}">
+          <span class="lvl ${o.l}">${LVN[o.l]}</span>
+          <b>${o.t}</b><span>${o.d}</span>
+          ${o.ex?`<span class="ex">${esc(o.ex)}</span>`:''}
+        </button>`).join('')}
+      </div>
+      <div class="nav">
+        <button class="ghost act" id="back">Atrás</button>
+        <button class="act" id="next" ${!S.safe[d.k]?'disabled':''}>
+          ${step===5?'Ver mi mapa':'Continuar'}</button>
+      </div>
+    </div>`;
+    stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      S.safe[d.k]=b.dataset.v;render();});
+    stage.querySelector('#back').onclick=()=>{step--;render();};
+    const n=stage.querySelector('#next');
+    if(n)n.onclick=()=>{step = step===5 ? 99 : step+1; render();};
+    return;
+  }
+
+  /* 99 · resultado */
+  railDraw(totalSteps,totalSteps);
+  const retro = S.route==='retrofit', sb = S.brands==='single';
+  let ranked=[], worst=null;
+  if(retro){
+    ranked=SAFE.map(d=>({k:d.k,name:d.name,l:S.safe[d.k],v:LV[S.safe[d.k]]}))
+      .sort((a,b)=>a.v-b.v);
+    worst=ranked[0];
+  }
+
+  /* orden de fases derivado */
+  let order=MAP.map((p,i)=>({...p,i,tag:''}));
+  if(retro){
+    const base=order.find(p=>p.t==='Base estable');
+    base.tag='inventario primero';
+    const pri=order.find(p=>p.safe===worst.k);
+    if(pri){pri.tag='tu punto más débil';pri.pri=true;}
+    order=[base, ...(pri&&pri!==base?[pri]:[]),
+           ...order.filter(p=>p!==base&&p!==pri)];
+    if(pri===base){base.pri=true;base.tag='tu punto más débil · inventario primero';}
+  }
+
+  stage.innerHTML=`
+  <div class="card">
+    <div class="eyebrow"><span class="pill">Resultado</span> tu mapa</div>
+    <h2>${retro?'Ruta retrofit':'Ruta greenfield'}</h2>
+    <div class="sum">
+      <span>ruta <b>${retro?'retrofit':'greenfield'}</b></span>
+      <span>marcas <b>${sb?'una':'varias'}</b></span>
+      <span>${retro?`más débil <b>${worst.name}</b>`:'madurez <b>no aplica</b>'}</span>
+      <span>fases <b>14</b></span>
+      <span>partes <b>${MAP.reduce((a,f)=>a+partesDe(f).length,0)}</b></span>
+      <span>pasos <b>${MAP.reduce((a,f)=>a+partesDe(f).reduce((b,p)=>b+p.pasos.length,0),0)}</b></span>
+    </div>
+
+    ${sb?`<h3>Podado por ser single-brand</h3>
+    <div class="later">
+      ${PRUNE.cut.map(([a,b])=>`<div><b style="text-decoration:line-through">${a}</b>
+        <em>fuera · ${b}</em></div>`).join('')}
+      ${PRUNE.red.map(([a,b])=>`<div><b>${a}</b><em>reducida · ${b}</em></div>`).join('')}
+    </div>
+    <div class="note">Dos partes completas y 15 pasos (de 138 a 123). <b>No es una versión “light” del
+      mismo mapa</b>: son ramas que dejan de existir, y con ellas el criterio de aceptación que
+      en multibrand es el más duro.</div>`:''}
+
+    ${retro?`<h3>Dónde estás más débil</h3>
+    <div class="ranking">${ranked.map((r,i)=>`
+      <div class="rank ${i===0?'worst':''}">
+        <span class="k" style="color:var(--${r.l==='low'?'stop':r.l==='med'?'pend':'ok'})">${r.k}</span>
+        <span class="n">${r.name}</span>
+        <span class="bar"><i style="width:${(r.v+1)/3*100}%;background:var(--${r.l==='low'?'stop':r.l==='med'?'pend':'ok'})"></i></span>
+        ${i===0?'<span class="tag">empieza aquí</span>':''}
+      </div>`).join('')}</div>
+    <div class="note ruta">La salida no es un nivel absoluto sino <b>el orden</b>. Es lo que la
+      fuente pide —<i>“Where are we weakest?”</i>— y lo único que el roadmap usa después.
+      <b>Structure: Medium</b> escondería lo mismo que esconde “99.85% de adherencia”
+      cuando la cobertura es 59%.</div>`:
+    `<div class="note">Sin sistema previo no hay madurez que medir. El mapa arranca en su orden
+      natural: propósito antes que formato, que es el ordering que la fuente prescribe.</div>`}
+
+    <h3>Premisas — no se preguntan porque solo tienen una respuesta</h3>
+    <div class="later">
+      <div><b>Lo consumen diseñadores, desarrolladores y agentes</b>
+        <em>los tres, siempre · no hay nada que enumerar</em></div>
+      <div><b>El agente es cliente de primera clase</b>
+        <em>si en tu caso no manda, la mayor parte de esto no te hace falta</em></div>
+      <div><b>Los stakeholders no son consumidores del sistema</b>
+        <em>consumen informes sobre su salud, no el sistema</em></div>
+      <div><b>${retro?'Existe un DS previo':'Se arranca de cero'} · ${sb?'una sola marca':'varias marcas'}</b>
+        <em>contestado arriba · condiciona el mapa entero</em></div>
+    </div>
+    <div class="note"><b>Un paso con una sola respuesta posible no es un paso: es una premisa.</b>
+      Va declarada al principio, no preguntada por el camino. Aplicar este criterio quitó
+      3 pasos que solo servían para inflar el recuento — enumerar consumidores que siempre son
+      los mismos, y decidir dos cosas que este proceso ya da por decididas.</div>
+
+    <h3>Tu mapa, paso a paso</h3>
+    <p class="q-help" style="margin-bottom:11px">Cada fase abre en sus partes, y cada parte en
+      sus pasos. ${sb?'Lo podado por ser de una sola marca no aparece.':
+      'Los pasos marcados <b style="color:var(--ruta)">multibrand</b> existen solo porque el sistema viste varias marcas.'}</p>
+    <button class="tg" id="btnAll" style="margin-bottom:12px">Expandir todo</button>
+    ${order.map((f,i)=>fase(f,i)).join('')}
+
+    <h3>Lo que NO se te preguntó aquí</h3>
+    <div class="later">${LATER.map(([q,w,why])=>`
+      <div><b>${q}</b> <em>${w} · ${why}</em></div>`).join('')}</div>
+    <div class="note"><b>Tres de esas siete ya son pasos del mapa.</b> No hacía falta
+      agregarlas a un cuestionario: hacía falta que sus respuestas propaguen desde donde ya
+      viven. Una pregunta sube al inicio <b>solo si cambia algo antes de su paso natural</b>.</div>
+
+    <h3>Antes de ejecutarlo</h3>
+    <div class="note stop"><b>Necesitas una persona accountable. Una sola, con nombre</b> — no
+      un comité, no “el equipo de diseño”. El roadmap es explícito: <i>“Sin steward NO
+      continuar”</i>. Sin alguien que pueda zanjar cuando dos criterios chocan, las reglas que
+      escribas no tienen quién las sostenga y el sistema vuelve a divergir.
+      <br><br>
+      <b>No se pregunta al principio a propósito.</b> No cambia el mapa —es binaria, no genera
+      ninguna variante— y bloquear el acceso a información por una condición organizacional es
+      mal diseño. El mapa se mira para entender; el steward hace falta para ejecutar.</div>
+
+    <div class="note"><b>Qué es prototipo y qué es doctrina.</b> Las dos preguntas y el
+      criterio de orden vienen de ADR-022. <b>El orden de fases que ves arriba es una propuesta
+      mía</b>: el mapeo dimensión SAFE → fase que lidera no está en ninguna fuente. Es lo
+      primero que hay que validar antes de llevarlo a los mapas.</div>
+
+    <div class="nav">
+      <button class="ghost act" id="back">Atrás</button>
+      <button class="ghost act" id="reset">Empezar de nuevo</button>
+    </div>
+  </div>`;
+  stage.querySelector('#back').onclick=()=>{step=retro?5:1;render();};
+  const ba=stage.querySelector('#btnAll');
+  if(ba){let op=false;ba.onclick=()=>{op=!op;
+    stage.querySelectorAll('details').forEach(d=>d.open=op);
+    ba.textContent=op?'Contraer todo':'Expandir todo';};}
+  stage.querySelector('#reset').onclick=()=>{
+    S.route=null;S.brands=null;S.safe={};step=0;render();};
+}
+
+document.getElementById('btnTheme').onclick=()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const sys=matchMedia('(prefers-color-scheme:dark)').matches;
+  const now=cur||(sys?'dark':'light');
+  document.documentElement.setAttribute('data-theme',now==='dark'?'light':'dark');
+};
+render();
+</script>

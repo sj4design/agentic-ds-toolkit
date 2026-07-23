@@ -1,0 +1,472 @@
+<title>Mapa mental — construir un design system multibrand agent-first</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);
+    --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
+    --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);--cross:hsl(28 78% 46%);
+    --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);
+      --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
+      --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+      --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
+      --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);--cross:hsl(28 88% 62%);
+      --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);
+    }
+  }
+  :root[data-theme="light"]{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);
+    --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
+    --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);--cross:hsl(28 78% 46%);
+    --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);
+  }
+  :root[data-theme="dark"]{
+    --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);
+    --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
+    --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+    --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);--cross:hsl(28 88% 62%);
+    --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);
+  }
+  body{margin:0;background:var(--page);color:var(--ink);
+    font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1500px;margin:0 auto;padding:22px 20px 60px}
+
+  header{display:flex;align-items:flex-start;gap:13px;margin-bottom:6px;flex-wrap:wrap}
+  .sig{width:38px;height:38px;border-radius:10px;flex:none;
+    background:linear-gradient(135deg,var(--before),var(--spec),var(--after));
+    display:grid;place-items:center;font-size:19px;box-shadow:var(--sh-sm)}
+  h1{font-size:19px;margin:0;letter-spacing:-.015em;font-weight:650}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .tools{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+  button.tg{font:inherit;font-size:12.5px;padding:6px 12px;border-radius:99px;cursor:pointer;
+    border:1px solid var(--border2);background:var(--card);color:var(--ink);
+    transition:background .13s,border-color .13s,color .13s}
+  button.tg:hover{background:var(--chip)}
+  button.tg[aria-pressed="true"]{background:var(--ruta);border-color:var(--ruta);color:#fff}
+  button.tg:focus-visible{outline:2px solid var(--spec);outline-offset:2px}
+
+  .lead{background:var(--card);border:1px solid var(--border);border-radius:13px;
+    padding:13px 16px;margin:16px 0 18px;color:var(--muted);font-size:13.5px;
+    box-shadow:var(--sh-sm);line-height:1.6}
+  .lead b{color:var(--ink);font-weight:620}
+  .lead .kb{color:var(--ruta);font-weight:640}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.85fr);
+    gap:20px;align-items:start}
+  @media (max-width:1080px){.layout{grid-template-columns:1fr}}
+
+  .stage{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    box-shadow:var(--sh-sm);padding:6px;overflow:hidden;
+    display:flex;justify-content:center}
+  svg.map{display:block;width:100%;height:auto;max-height:80vh;
+    touch-action:manipulation}
+  @media (max-width:1080px){svg.map{max-height:none}}
+
+  .node{cursor:pointer}
+  .node .hit{fill:transparent}
+  .node:focus{outline:none}
+  .node:focus-visible .ring{stroke:var(--spec);stroke-width:3}
+  .fase circle.dot{transition:r .15s,stroke-width .15s}
+  .node:hover circle.dot{stroke-width:3.5}
+  .lbl{font-size:11.5px;font-weight:600;fill:var(--ink);pointer-events:none}
+  .lbl.sm{font-size:10.2px;font-weight:500;fill:var(--muted);
+    opacity:0;transition:opacity .18s}
+  .lbl.sm.show{opacity:1}
+  .pdot{transition:r .18s,opacity .18s}
+  .pdot.show{r:6.5}
+  .arcname{font-size:12.5px;font-weight:700;letter-spacing:.07em;pointer-events:none}
+  .arccount{font-size:10px;font-weight:600;fill:var(--faint);pointer-events:none}
+  .ctr-t{font-size:14px;font-weight:700;fill:var(--ink);pointer-events:none}
+  .ctr-s{font-size:10.5px;fill:var(--muted);pointer-events:none}
+  .link{fill:none;stroke:var(--border2);stroke-width:1.4}
+  .link.a-before{stroke:color-mix(in srgb,var(--before) 45%,transparent)}
+  .link.a-spec{stroke:color-mix(in srgb,var(--spec) 45%,transparent)}
+  .link.a-after{stroke:color-mix(in srgb,var(--after) 42%,transparent)}
+  .link.a-cross{stroke:color-mix(in srgb,var(--cross) 42%,transparent)}
+  .rutapath{fill:none;stroke:var(--ruta);stroke-width:2.6;stroke-linecap:round;
+    stroke-dasharray:5 6;opacity:0;transition:opacity .22s}
+  .rutapath.on{opacity:.9;animation:march 22s linear infinite}
+  @keyframes march{to{stroke-dashoffset:-220}}
+  .dim{opacity:.24;transition:opacity .2s}
+  .node.sel circle.dot{stroke-width:4}
+
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    box-shadow:var(--sh-sm);padding:18px;position:sticky;top:18px;
+    max-height:calc(100vh - 40px);overflow:auto}
+  @media (max-width:1080px){.panel{position:static;max-height:none}}
+  .p-eyebrow{font-size:10.5px;letter-spacing:.09em;font-weight:700;text-transform:uppercase;
+    margin-bottom:5px}
+  .p-title{font-size:17px;font-weight:660;letter-spacing:-.012em;margin:0 0 6px;
+    display:flex;align-items:center;gap:8px}
+  .p-desc{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.6}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;
+    padding:3px 9px;border-radius:99px;border:1px solid var(--border2);background:var(--chip);
+    color:var(--muted);white-space:nowrap}
+  .badge.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--border2));
+    background:color-mix(in srgb,var(--ok) 9%,transparent)}
+  .badge.pend{color:var(--pend);border-color:color-mix(in srgb,var(--pend) 40%,var(--border2));
+    background:color-mix(in srgb,var(--pend) 9%,transparent)}
+  .badge.part{color:var(--spec);border-color:color-mix(in srgb,var(--spec) 40%,var(--border2));
+    background:color-mix(in srgb,var(--spec) 9%,transparent)}
+  .badge.ruta{color:var(--ruta);border-color:color-mix(in srgb,var(--ruta) 45%,var(--border2));
+    background:color-mix(in srgb,var(--ruta) 10%,transparent)}
+  .parte{border:1px solid var(--border);border-radius:11px;padding:11px 13px;
+    margin-bottom:9px;background:var(--card2)}
+  .parte h4{margin:0 0 3px;font-size:13.5px;font-weight:625;display:flex;gap:7px;
+    align-items:baseline;flex-wrap:wrap}
+  .parte p{margin:0 0 8px;font-size:12.3px;color:var(--muted);line-height:1.5}
+  .parte ol{margin:0;padding-left:17px}
+  .parte li{font-size:12.3px;color:var(--ink);margin-bottom:3px;line-height:1.5}
+  .parte li::marker{color:var(--faint);font-size:10.5px}
+  .parte code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:11.3px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .note{border-left:3px solid var(--ruta);padding:9px 12px;background:var(--chip);
+    border-radius:0 9px 9px 0;font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.55}
+  .note b{color:var(--ink)}
+  .empty{color:var(--faint);font-size:13px;text-align:center;padding:40px 12px;line-height:1.7}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 0;font-size:11.5px;
+    color:var(--muted);align-items:center}
+  .legend i{width:11px;height:11px;border-radius:50%;display:inline-block;
+    margin-right:5px;vertical-align:-1px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:9px;
+    margin:18px 0 0}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:11px;
+    padding:10px 12px;box-shadow:var(--sh-sm)}
+  .stat b{display:block;font-size:20px;font-weight:680;letter-spacing:-.02em;line-height:1.15}
+  .stat span{font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="sig">🧠</div>
+  <div>
+    <h1>Construir un design system multibrand agent-first</h1>
+    <div class="sub">135 pasos secuenciales + 18 transversales — el territorio completo, y la ruta que lo atraviesa</div>
+  </div>
+  <div class="tools">
+    <button class="tg" id="btnRuta" aria-pressed="false">Ruta del Login</button>
+    <button class="tg" id="btnTheme">Tema</button>
+  </div>
+</header>
+
+<div class="lead">
+  Cuatro arcos: <b style="color:var(--before)">ANTES</b> reúne y explora ·
+  <b style="color:var(--spec)">EL SPEC</b> fija las reglas ·
+  <b style="color:var(--after)">DESPUÉS</b> construye ·
+  <b style="color:var(--cross)">TRANSVERSAL</b> corre en paralelo a los tres, no después.
+  Toca cualquier nodo para ver sus partes y su paso a paso.
+  <br>
+  <span class="kb">La ruta del Login</span> muestra lo que ninguno de los dos documentos deja ver por separado:
+  el plan actual <b>atraviesa 6 de las 8 fases de DESPUÉS sin completar ninguna</b>.
+  Eso no es un plan incompleto — es cómo se ve el método screen-driven cuando lo dibujás.
+</div>
+
+<div class="layout">
+  <div class="stage">
+    <svg class="map" id="svg" viewBox="-95 -10 1370 1215" role="img"
+         aria-label="Mapa mental radial de 14 fases para construir un design system multibrand">
+      <g id="gLinks"></g><g id="gRuta"></g><g id="gArcs"></g>
+      <g id="gPartes"></g><g id="gFases"></g><g id="gCenter"></g>
+    </svg>
+  </div>
+
+  <aside class="panel" id="panel">
+    <div class="empty" id="empty">
+      Toca una fase del mapa<br>para ver sus partes y sus pasos.
+    </div>
+    <div id="content" hidden></div>
+  </aside>
+</div>
+
+<div class="legend">
+  <span><i style="background:var(--ok)"></i>hecho</span>
+  <span><i style="background:var(--spec)"></i>parcial</span>
+  <span><i style="background:var(--pend)"></i>pendiente</span>
+  <span><i style="background:var(--ruta)"></i>en la ruta del Login</span>
+</div>
+
+<div class="stats">
+  <div class="stat"><b style="color:var(--ok)">5<span style="font-size:13px;color:var(--faint)">/16</span></b><span>fases hechas</span></div>
+  <div class="stat"><b style="color:var(--spec)">5<span style="font-size:13px;color:var(--faint)">/7</span></b><span>partes del SPEC</span></div>
+  <div class="stat"><b style="color:var(--ruta)">6<span style="font-size:13px;color:var(--faint)">/8</span></b><span>fases que corta la ruta</span></div>
+  <div class="stat"><b style="color:var(--cross)">2</b><span>fases transversales</span></div>
+</div>
+</div>
+
+<script>
+/* ── datos: 14 fases → 46 partes → 138 pasos ────────────────────────── */
+const DATA=[
+{arc:'before',ic:'🎯',t:'Propósito & intent',st:'ok',d:'Antes de decidir cómo documentar, defines por qué existe el sistema y para quién.',subs:[
+ ['El problema que resuelve','El dolor concreto que justifica el sistema.',['Nombra el dolor: ¿inconsistencia, lentitud, ilegible para IA?','Escríbelo como meta en una frase medible','Marca qué NO va a resolver (evita scope creep)']],
+ ['Qué formato recibe cada consumidor','Quiénes son es premisa; qué formato gana, no.',['Mapea cada consumidor a su formato: la regla vive como dato, la prosa es vista derivada']],
+ ['Qué tipo de sistema','Define la arquitectura desde el día uno.',['¿Producto único o plataforma reutilizable?','¿Web, móvil, multiplataforma? (define namespaces)']]]},
+{arc:'before',ic:'📚',t:'Prior art / investigación',st:'ok',d:'Estudiar cómo otros ya lo resolvieron y qué falla.',subs:[
+ ['Auditar sistemas reales','Aprender de DS maduros.',['Elige 5-10 DS de referencia de tu dominio','Evalúalos con una rúbrica (tiers, contratos, AI-metadata)','Anota qué copiar y qué evitar']],
+ ['Leer teoría / estándares','La base conceptual AI-ready.',['Lee la literatura (intent-first, docs-as-metadata)','Revisa estándares abiertos: <code>llms.txt</code>, DTCG, MCP','Extrae los principios no-negociables']],
+ ['Patrones y anti-patrones','Nombres que funcionan vs que rompen.',['Colecciona tokens buenos (<code>bg-brand</code>) y malos (<code>blue-500</code>)','Define tus reglas de naming (intención, no valor)','Documenta anti-patterns para el linter futuro']]]},
+{arc:'before',ic:'🎨',t:'Fundamentos / primitivas',st:'ok',d:'La materia prima cruda: valores concretos antes de nombrarlos.',subs:[
+ ['Paleta de color','Las rampas base del sistema.',['Elige los hues semilla (marca + estados)','Genera rampas de N pasos (p.ej. 16)','Valida contraste WCAG por paso (pivotes/floors)']],
+ ['Escalas base','Todo lo que no es color (¡el 80% de una pantalla!).',['Define espaciado (base 4/8)','Define tipografía (familias + escala modular)','Define radios, tamaños, breakpoints']],
+ ['Identidad de marca(s)','Qué va a vestir el sistema.',['Fija el color semilla de cada marca','Describe su personalidad (denso/aireado, serio/lúdico)','Reúne referencias reales (pantallas, guías)']]]},
+{arc:'before',ic:'🧱',t:'Base estable',st:'ok',d:'Ordenar lo existente antes de construir encima.',subs:[
+ ['Auditoría estructural honesta','Medir el caos antes de decidir.',['Inventaria lo que existe (tokens, componentes, archivos)','Mide inconsistencias y duplicados','Puntúa la madurez con una rúbrica AI-ready']],
+ ['Resolver drift / deuda','Reconciliar lo divergente.',['Reconcilia duplicados y versiones','Actualiza o borra docs stale','Consolida ramas/worktrees dispersos']],
+ ['Un único source of truth','Una fuente por hecho.',['Decide dónde vive cada dato','Elimina las copias secundarias','Documenta la regla "una fuente por hecho"']]]},
+{arc:'before',ic:'🔀',t:'Decisiones exploradas',st:'ok',d:'Explorar las bifurcaciones grandes hasta que sean estables.',subs:[
+ ['Modelo de tiers','Cuántas capas de tokens.',['Prototipa 2-3 modelos de tiers','Prueba cada uno contra un caso real','Elige y justifica en un ADR']],
+ ['Estrategia de naming','Cómo se nombran/derivan los tokens.',['Compara álgebra vs tokens nombrados','Decide component-tokens: ¿sí o no?','Fija la gramática de nombres']],
+ ['Mecanismo multibrand','Cómo cambia de marca.',['Decide en qué capa ocurre el swap','Resuelve colisiones de hue (brand vs estado)','Valida con 2 marcas de prueba']]]},
+
+{arc:'spec',ic:'🏛️',t:'El Spec (la constitución)',st:'part',d:'Fija las reglas; apunta a los contratos, no los contiene. 5 de 7 partes cerradas.',subs:[
+ ['Alcance & no-goals','Qué es y qué NO es.',['Escribe qué ES en 2-3 frases','Lista los no-goals explícitos','Define el criterio de "done" del sistema'],'ok'],
+ ['Arquitectura de tokens','Gramática + álgebra + tiers.',['Documenta la gramática <code>{role}-{context}-{qualifier}-{state}</code>','Documenta el álgebra (<code>self-N</code>, <code>pivot±N</code>, overrides)','Tabla de los tiers y cómo resuelven'],'ok'],
+ ['Roles & multibrand','El set semántico y el swap.',['Enumera los roles semánticos + accents','Define el brand-swap (capa + temas)','Fija la política de colisión'],'ok'],
+ ['Schema de contrato','La forma de todo contrato.',['Define los campos obligatorios','Incluye 1 ejemplo trabajado (Button)','Especifica composition rules + deprecation'],'ok'],
+ ['Fallas & enforcement','Cómo se previene el drift.',['Lista los modos de falla conocidos','Mapea cada falla a un check de CI','Define el gate de merge'],'part'],
+ ['Plan de delivery','Cómo llega a humanos y agentes.',['Mapea contenido → intent → mecanismo (Diana)','Ordena las fases (llms.txt → MCP → Skills)','Define el MVP de delivery'],'part'],
+ ['Metodología de build','Cómo se construye.',['Fija el orden (screen-driven, atoms→molecules)','Define la pantalla como acceptance test','Elige la pantalla #1'],'ok']],
+ note:'<b>§5 y §6 quedaron parciales a propósito.</b> El gate de merge no se puede escribir sobre un compilador que sabemos roto, y el MVP de delivery depende de qué necesite consultar el agente para armar el Login. Fijarlos antes sería inventar.'},
+
+{arc:'after',ic:'🧩',t:'Cerrar la superficie de tokens',st:'pend',ruta:[1,2],d:'Trazar todos los tokens para que nadie tenga que hardcodear.',subs:[
+ ['Cerrar gaps de color','Los slots sin token.',['Lista slots consumidos sin token (icon, focus-ring…)','Nómbralos siguiendo la gramática','Añádelos al álgebra + valida contraste']],
+ ['Abrir namespaces de layout','Space/size/radius/type.',['Abre los namespaces de layout','Puebla solo lo que la pantalla #1 pide','Mapea a la escala base']],
+ ['Definir accents / data-viz','Los colores extra.',['Asigna los ramps sueltos a <code>accent-1…N</code>','Define aliases (new/magic/promo)','Documenta que son categóricos (sin significado fijo)']]],
+ note:'La ruta corta aquí por <b>los pasos 1 y 2</b>: abre <code>type</code> y <code>size</code> solo hasta donde el Login los pide, y escribe los dos archivos de tema. <b>Accents queda fuera</b> — un Login no pide <code>accent-3</code>.'},
+{arc:'after',ic:'📋',t:'Autorar contratos',st:'pend',ruta:[5],d:'El contrato de cada componente, demandado por pantalla.',subs:[
+ ['Metadata (la API)','La ficha técnica.',['Declara variantes/roles/estados/slots','Añade a11y (roles, teclado, CR medidos)','Añade aiHints / usage / antiPatterns']],
+ ['Recipes (slot→token)','El binding.',['Mapea cada slot a su token por estado','Añade overrides por predicado (dark/marca)','Reutiliza recipes entre componentes']],
+ ['Composición & deprecation','Anidamiento y obsolescencia.',['Define allowedChildren/forbiddenChildren/maxDepth','Añade bloque de deprecation (since/replacement)','Enlaza al codemod']]],
+ note:'La ruta corta por el <b>paso 5</b>, y solo para 3 componentes: Button · Input · Label. El contrato se autora <b>antes</b> del componente — al revés se produce drift desde el día uno.'},
+{arc:'after',ic:'⚙️',t:'Compilar',st:'pend',ruta:[3,4],d:'Generar lo derivable. Nada a mano dos veces.',subs:[
+ ['Índice de reglas atómicas','Direccionable por agentes.',['Corre el parser recipes→índice','Verifica cobertura (toda regla existe)','Expón el índice a los consumidores']],
+ ['Export estándar (DTCG/CSS)','Portable a otras tools.',['Configura el pipeline de export','Emite DTCG + CSS vars + Tailwind','Versiona el output']],
+ ['Variables de Figma','Diseño y dev alineados.',['Genera variables con nombre idéntico','Crea modes por marca','Sincroniza en cada release']]],
+ note:'La ruta corta por los <b>pasos 3 y 4</b>: arreglar el resolvedor (pasa de decisor a reportero) y montar el compilador <code>rule × tema × modo → primitivo</code>. <b>DTCG y Figma quedan fuera</b> — nada los pide todavía.'},
+{arc:'after',ic:'🛡️',t:'Enforcement (CI)',st:'pend',ruta:[7],d:'Checks que bloquean el merge si algo rompe las reglas.',subs:[
+ ['Token-audit','Caza hardcode.',['Escanea hex/px hardcodeados','Bloquea el merge si hay violaciones','Reporta con archivo:línea']],
+ ['Contract-audit','Código == contrato.',['Compara recipe vs código renderizado','Verifica que las reglas existen en el índice','Falla en drift']],
+ ['Brand-swap test','La prueba multibrand.',['Renderiza cada componente en cada marca','Asegura cero fuga de nombre de marca','Snapshot por marca']]],
+ note:'La ruta corta por el <b>paso 7</b> — pero solo el brand-swap test, y <b>a mano</b>. Automatizarlo exige el gate de merge, que el SPEC §5.3 dejó bloqueado hasta calibrar la ventana perceptible contra un render.'},
+{arc:'after',ic:'🔨',t:'Construir componentes',st:'pend',ruta:[5],d:'De lo más pequeño a lo más grande, leyendo solo tokens.',subs:[
+ ['Átomos','Las piezas indivisibles.',['Elige los átomos que la pantalla necesita','Implementa leyendo solo tokens','Pasa el brand-swap test']],
+ ['Moléculas','Combinaciones de átomos.',['Compón átomos en moléculas','Reusa los contratos existentes','Verifica composición legal']],
+ ['React (solo tokens)','La regla de oro.',['Prohíbe hex/marca en el código (regla de build)','Consume tokens vía CSS vars / theme','Documenta props = contrato']]],
+ note:'El test del <b>Button</b> es el que decide si la capa de alias funcionó: <code>primary-bg</code> debe dar negro en PayPal y rojo en Pinterest <b>sin que el componente sepa cuál</b>. Si el Button pregunta por la marca, el diseño falló.'},
+{arc:'after',ic:'🖥️',t:'Ensamblar pantallas',st:'pend',ruta:[6],d:'La pantalla es el criterio de "terminado".',subs:[
+ ['Componer','Armar la pantalla real.',['Toma la referencia (screenshot Mobbin)','Identifica qué componentes la arman','Compón la pantalla']],
+ ['Verificar en cada marca','El acceptance test.',['Haz flip de marca','Confirma re-render correcto sin tocar código','Ajusta tokens si algo rompe']],
+ ['Match vs referencia','Fidelidad al diseño.',['Compara lado a lado con la referencia','Anota divergencias','Itera hasta el match']]],
+ note:'La ruta corta por el <b>paso 6</b> con una sola pantalla: Login, light mode, densidad default. Si aparece un token nuevo, <b>se para y se anota</b> — anotar no es implementar.'},
+{arc:'after',ic:'🤖',t:'Delivery AI-ready',st:'pend',d:'Exponer el sistema para que un agente arme la siguiente pantalla.',subs:[
+ ['AGENTS.md + llms.txt','Fase 0, barato y potente.',['Escribe AGENTS.md (constraints + framing)','Escribe llms.txt (índice guideline)','Sigue el checklist de designsystemsforai.com']],
+ ['MCP server','El corazón del delivery.',['Define las tools (resolve_token, get_contract…)','Conéctalo a las fuentes (recipes, álgebra)','Pruébalo con un agente real']],
+ ['Skills','La capa de workflow.',['Empaqueta skills (generate-component, audit-screen)','Distribúyelas (npm)','Versiónalas']]],
+ note:'<b>La ruta NO corta aquí.</b> El SPEC §6 ya mapeó intent→mecanismo y fijó el orden <code>llms.txt → MCP → Skills</code>, pero el MVP se elige <b>después</b> del Login, con la evidencia de qué necesitó consultar el agente.'},
+{arc:'after',ic:'🔁',t:'Gobernar / evolucionar',st:'pend',d:'Cambiar sin romper a quienes lo consumen.',subs:[
+ ['Deprecation + codemods','Obsolescencia con reemplazo.',['Marca obsoletos con su reemplazo','Escribe el codemod de migración','Comunica el cambio']],
+ ['Usage tracker','Migrar con datos.',['Escanea apps consumidoras','Emite usage-report.json','Prioriza migraciones con datos']],
+ ['Audit loop + versionado','Salud continua.',['Programa el audit recurrente','Versiona con semver + deprecation policy','Mantén el changelog']]],
+ note:'<b>La ruta NO corta aquí</b>, y es correcto: no se gobierna un sistema que todavía no tiene consumidores. Esta fase nace cuando existe la segunda pantalla.'},
+{arc:'cross',ic:'🧑',t:'Capa humana',st:'pend',d:'El sistema lo sostiene una persona. Sin ella las reglas no tienen quién las defienda.',subs:[
+ ['Steward','Quién responde por el sistema.',['Señales de steward latente: reporta inconsistencias hacia el sistema en vez de rodearlas','Descalificadores: sin autoridad de decisión, o asignado por antigüedad','Descripción de rol aprobable por un manager: horas, alcance, derechos de decisión']],
+ ['Fluidez y cultivo','Que la gente sepa usarlo.',['Rúbrica de fluidez v0 — la rúbrica es gate, la evaluación no','Ruta de cultivo, en paralelo desde el mes 1','Modelo de coste: cuántas horas cuesta sostenerlo']],
+ ['Rituales y adopción','Cómo se sostiene en el tiempo.',['Ritual de excepciones: dónde vive una excepción cuando aparece','Adopción lateral cuando el primer artefacto es público','Escalado: a quién se acude cuando dos criterios chocan']]],
+ note:'<b>Corre en paralelo a las otras tres ramas</b>, no después. Es la fase E del roadmap, marcada <i>cross-cutting</i>. Su conteo va aparte del secuencial por eso.'},
+{arc:'cross',ic:'📣',t:'Buy-in',st:'pend',d:'Conseguir y sostener el permiso para hacerlo.',subs:[
+ ['Encuadre de riesgo','Hablar de exposición, no de pulcritud.',['Nombra el riesgo de no hacerlo: la IA escala la inconsistencia que ya tienes','Traduce cada dimensión débil a riesgo de negocio','Evita el argumento estético: no convence a quien firma']],
+ ['SAFE para priorizar','El uso para el que fue diseñado.',['Preséntalo como plan de inversión priorizado, no como nota de madurez','Señala la dimensión más débil como la mayor exposición','La fuente lo escribió para dirección, no para autoevaluarse']],
+ ['Capacidad y datos','Qué se pide y con qué se respalda.',['Incluye la capacidad en el pitch: sin steward con horas, no hay sistema','Lleva datos de adopción y drift, no impresiones','Repite la medición para mostrar tendencia, no una foto']]],
+ note:'Sin esto el sistema técnico puede estar impecable y morir igual por falta de permiso.'}
+];
+
+const RUTA=[
+ {n:1,t:'Cerrar Tier 2 de type y size',d:'Ambas marcas arrancan idénticas — no hay data de tipografía por marca.'},
+ {n:2,t:'Escribir los dos archivos de tema',d:'Casi todo transcripción: los valores ya están decididos.'},
+ {n:3,t:'Arreglar resolve-semantics.mjs',d:'De decisor a reportero: recibe el desplazamiento, no lo computa.'},
+ {n:4,t:'Scaffold React + compilador',d:'rule × tema × modo → primitivo. Ningún hex a mano.'},
+ {n:5,t:'Contratos + Button · Input · Label',d:'El contrato antes que el componente.'},
+ {n:6,t:'Construir el Login',d:'Solo composición. Token nuevo = parar y anotar.'},
+ {n:7,t:'El brand-swap test',d:'No se aprueba ni se reprueba — se lee.'}
+];
+
+const ARCS={
+ before:{name:'ANTES',col:'var(--before)',cls:'a-before'},
+ spec:{name:'EL SPEC',col:'var(--spec)',cls:'a-spec'},
+ after:{name:'DESPUÉS',col:'var(--after)',cls:'a-after'},
+ cross:{name:'TRANSVERSAL',col:'var(--cross)',cls:'a-cross'}
+};
+const STC={ok:'var(--ok)',part:'var(--spec)',pend:'var(--pend)'};
+const STN={ok:'hecho',part:'parcial',pend:'pendiente'};
+
+/* ── layout radial ─────────────────────────────────────────────────── */
+const CX=590,CY=590,R_FASE=225,R_PARTE=362;
+const counts={before:0,spec:0,after:0,cross:0};
+DATA.forEach(f=>counts[f.arc]++);
+const GAP=15, total=DATA.length, budget=360-GAP*4;
+const spans={}; let cur=-90;
+['before','spec','after','cross'].forEach(k=>{
+  const sp=budget*counts[k]/total;
+  spans[k]={from:cur,to:cur+sp}; cur+=sp+GAP;
+});
+const seen={before:0,spec:0,after:0,cross:0};
+DATA.forEach(f=>{
+  const s=spans[f.arc], n=counts[f.arc], i=seen[f.arc]++;
+  const step=(s.to-s.from)/n;
+  f._a=s.from+step*(i+.5);
+  f._a0=s.from+step*i; f._a1=s.from+step*(i+1);
+});
+const rad=d=>d*Math.PI/180;
+const P=(a,r)=>[CX+Math.cos(rad(a))*r, CY+Math.sin(rad(a))*r];
+const el=(t,at={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);
+  for(const k in at)e.setAttribute(k,at[k]);return e;};
+
+const gL=document.getElementById('gLinks'),gR=document.getElementById('gRuta'),
+      gA=document.getElementById('gArcs'),gP=document.getElementById('gPartes'),
+      gF=document.getElementById('gFases'),gC=document.getElementById('gCenter');
+
+/* centro */
+gC.appendChild(el('circle',{cx:CX,cy:CY,r:82,fill:'var(--card)',
+  stroke:'var(--border2)','stroke-width':1.5}));
+[['Magic',-8,'ctr-t'],['multibrand',9,'ctr-s'],['agent-first',23,'ctr-s']].forEach(([tx,dy,c])=>{
+  const t=el('text',{x:CX,y:CY+dy,'text-anchor':'middle',class:c});t.textContent=tx;gC.appendChild(t);
+});
+
+/* etiquetas de arco */
+['before','spec','after','cross'].forEach(k=>{
+  const s=spans[k],mid=(s.from+s.to)/2,[x,y]=P(mid,505);
+  const t=el('text',{x,y,'text-anchor':'middle',class:'arcname',fill:ARCS[k].col});
+  t.textContent=ARCS[k].name; gA.appendChild(t);
+  const c=el('text',{x,y:y+14,'text-anchor':'middle',class:'arccount'});
+  c.textContent=counts[k]+(counts[k]===1?' fase':' fases'); gA.appendChild(c);
+});
+
+/* nodos */
+const nodeEls=[];
+DATA.forEach((f,fi)=>{
+  const [fx,fy]=P(f._a,R_FASE), A=ARCS[f.arc];
+  const [ox,oy]=P(f._a,82);
+  gL.appendChild(el('path',{d:`M${ox} ${oy} L${fx} ${fy}`,class:'link '+A.cls}));
+
+  /* partes */
+  const n=f.subs.length, sub=(f._a1-f._a0)*.86, st=sub/n, base=f._a-sub/2;
+  f.subs.forEach((s,si)=>{
+    const a=base+st*(si+.5),[px,py]=P(a,R_PARTE);
+    gL.appendChild(el('path',{d:`M${fx} ${fy} L${px} ${py}`,class:'link '+A.cls,opacity:.5}));
+    const stt=s[3]||f.st;
+    gP.appendChild(el('circle',{cx:px,cy:py,r:5,fill:STC[stt],
+      stroke:'var(--card)','stroke-width':1.6,class:'pdot','data-f':fi}));
+    const right=Math.cos(rad(a))>=0;
+    const t=el('text',{x:px+(right?12:-12),y:py+3.5,
+      'text-anchor':right?'start':'end',class:'lbl sm','data-f':fi});
+    t.textContent=s[0];
+    gP.appendChild(t);
+  });
+
+  /* fase */
+  const g=el('g',{class:'node fase',tabindex:0,role:'button',
+    'aria-label':f.t+' — '+STN[f.st]});
+  g.appendChild(el('circle',{cx:fx,cy:fy,r:34,class:'hit'}));
+  g.appendChild(el('circle',{cx:fx,cy:fy,r:23,class:'ring',fill:'var(--card)',
+    stroke:A.col,'stroke-width':2}));
+  g.appendChild(el('circle',{cx:fx,cy:fy,r:23,class:'dot',fill:'transparent',
+    stroke:STC[f.st],'stroke-width':2.4,'stroke-dasharray':f.st==='ok'?'':'4 3'}));
+  const ic=el('text',{x:fx,y:fy+6,'text-anchor':'middle','font-size':17});
+  ic.textContent=f.ic; g.appendChild(ic);
+  const right=Math.cos(rad(f._a))>=0;
+  const lt=el('text',{x:fx+(right?32:-32),y:fy+4,
+    'text-anchor':right?'start':'end',class:'lbl'});
+  lt.textContent=f.t; g.appendChild(lt);
+  if(f.ruta){
+    const b=el('circle',{cx:fx+17,cy:fy-17,r:6.5,fill:'var(--ruta)',
+      stroke:'var(--card)','stroke-width':2,class:'rutbadge'});
+    b.style.opacity=0; b.style.transition='opacity .2s'; g.appendChild(b);
+  }
+  g.addEventListener('click',()=>select(fi));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(fi);}});
+  g.addEventListener('mouseenter',()=>showParts(fi));
+  g.addEventListener('mouseleave',()=>showParts(sel));
+  g.addEventListener('focus',()=>showParts(fi));
+  gF.appendChild(g); nodeEls.push(g); f._xy=[fx,fy];
+});
+
+/* ruta: hilo por las fases que toca, en orden de paso */
+const order=[];
+RUTA.forEach(r=>{DATA.forEach((f,i)=>{if(f.ruta&&f.ruta.includes(r.n)&&!order.includes(i))order.push(i);});});
+let dpath='';
+order.forEach((i,k)=>{const [x,y]=DATA[i]._xy;dpath+=(k?' L':'M')+x+' '+y;});
+const rutaPath=el('path',{d:dpath,class:'rutapath'}); gR.appendChild(rutaPath);
+
+/* ── panel ─────────────────────────────────────────────────────────── */
+const panel=document.getElementById('content'),empty=document.getElementById('empty');
+let sel=-1;
+
+/* etiquetas de parte: solo las de la fase enfocada — evita que 46 rótulos colisionen */
+function showParts(i){
+  gP.querySelectorAll('[data-f]').forEach(n=>
+    n.classList.toggle('show', i>=0 && +n.getAttribute('data-f')===i));
+}
+
+function select(i){
+  sel=i; const f=DATA[i]; showParts(i);
+  nodeEls.forEach((n,k)=>n.classList.toggle('sel',k===i));
+  empty.hidden=true; panel.hidden=false;
+  const A=ARCS[f.arc];
+  let h=`<div class="p-eyebrow" style="color:${A.col}">${A.name}</div>
+    <h2 class="p-title">${f.ic} ${f.t}</h2>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px">
+      <span class="badge ${f.st}">${STN[f.st]}</span>
+      ${f.ruta?`<span class="badge ruta">ruta · paso ${f.ruta.join(' y ')}</span>`:''}
+      <span class="badge">${f.subs.length} partes · ${f.subs.length*3} pasos</span>
+    </div>
+    <p class="p-desc">${f.d}</p>`;
+  f.subs.forEach(s=>{
+    const stt=s[3];
+    h+=`<div class="parte"><h4>${s[0]}${stt?` <span class="badge ${stt}">${STN[stt]}</span>`:''}</h4>
+      <p>${s[1]}</p><ol>${s[2].map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
+  });
+  if(f.note)h+=`<div class="note">${f.note}</div>`;
+  panel.innerHTML=h; panel.scrollTop=0;
+}
+
+/* ── toggles ───────────────────────────────────────────────────────── */
+let rutaOn=false;
+const btnR=document.getElementById('btnRuta');
+btnR.addEventListener('click',()=>{
+  rutaOn=!rutaOn; btnR.setAttribute('aria-pressed',rutaOn);
+  rutaPath.classList.toggle('on',rutaOn);
+  nodeEls.forEach((n,i)=>n.classList.toggle('dim',rutaOn&&!DATA[i].ruta));
+  document.querySelectorAll('.rutbadge').forEach(b=>b.style.opacity=rutaOn?1:0);
+  if(rutaOn){
+    empty.hidden=true; panel.hidden=false; sel=-1; showParts(-1);
+    nodeEls.forEach(n=>n.classList.remove('sel'));
+    panel.innerHTML=`<div class="p-eyebrow" style="color:var(--ruta)">RUTA ACTIVA</div>
+      <h2 class="p-title">🧵 El hilo del Login</h2>
+      <p class="p-desc">7 pasos que atraviesan <b>6 de las 8 fases de DESPUÉS</b> sin completar
+      ninguna. Es un corte vertical, no un barrido horizontal — así se ve el método
+      screen-driven cuando se dibuja.</p>
+      ${RUTA.map(r=>`<div class="parte"><h4><span style="color:var(--ruta)">${r.n}</span> ${r.t}</h4>
+        <p style="margin:0">${r.d}</p></div>`).join('')}
+      <div class="note"><b>Las 2 fases que no corta</b> — Delivery AI-ready y Gobernar —
+      no son olvidos. No se gobierna un sistema sin consumidores, y el MVP de delivery se
+      elige con la evidencia de qué necesitó consultar el agente para armar el Login.</div>`;
+  }else{ panel.hidden=true; empty.hidden=false; }
+});
+
+const btnT=document.getElementById('btnTheme');
+btnT.addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const sysDark=matchMedia('(prefers-color-scheme:dark)').matches;
+  const now=cur||(sysDark?'dark':'light');
+  document.documentElement.setAttribute('data-theme',now==='dark'?'light':'dark');
+});
+</script>

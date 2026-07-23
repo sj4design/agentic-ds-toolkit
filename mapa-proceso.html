@@ -1,0 +1,243 @@
+<title>Mapa paso a paso — construir un Design System AI-ready</title>
+<style>
+  :root{
+    --page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);--ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);
+    --faint:hsl(240 8% 58%);--border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
+    --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);--cross:hsl(28 78% 46%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);
+    --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);--ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);
+    --faint:hsl(240 9% 45%);--border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
+    --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);--cross:hsl(28 88% 62%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);
+    --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);
+  }}
+  :root[data-theme="light"]{--page:hsl(240 16% 97%);--card:hsl(0 0% 100%);--card2:hsl(240 20% 98.5%);--ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);--border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);--before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);--cross:hsl(28 78% 46%);--ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);}
+  :root[data-theme="dark"]{--page:hsl(240 13% 8%);--card:hsl(240 12% 12%);--card2:hsl(240 12% 15%);--ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);--border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);--before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);--cross:hsl(28 88% 62%);--ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);}
+  *{box-sizing:border-box}
+  .wrap{margin:0;font-family:var(--sans);background:var(--page);color:var(--ink);min-height:100vh;padding:clamp(18px,3vw,38px) clamp(14px,3vw,34px) 80px;-webkit-font-smoothing:antialiased}
+  .shell{max-width:840px;margin:0 auto}
+  header.mh{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;margin-bottom:8px}
+  .ttl{display:flex;align-items:center;gap:12px}
+  .sig{width:38px;height:38px;border-radius:10px;flex:none;background:linear-gradient(135deg,var(--before),var(--spec),var(--after));display:grid;place-items:center;font-size:19px;box-shadow:var(--sh-sm)}
+  h1{font-size:clamp(19px,2.4vw,24px);margin:0;letter-spacing:-.02em}
+  h1 small{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:3px}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  button.tg{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--border2);border-radius:999px;padding:7px 12px;cursor:pointer;box-shadow:var(--sh-sm)}
+  button.tg[aria-pressed="true"]{background:var(--spec);color:#fff;border-color:var(--spec)}
+  button.tg:focus-visible,summary:focus-visible{outline:2px solid var(--spec);outline-offset:2px}
+
+  .lead{margin:14px 0 20px;font-size:13.5px;line-height:1.55;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;box-shadow:var(--sh-sm)}
+  .lead b{color:var(--spec)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:8px 2px 0}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .lv{width:14px;height:14px;border-radius:4px;display:inline-grid;place-items:center;font-size:8px;font-weight:800;color:#fff}
+
+  .branch{margin-bottom:26px}
+  .bh{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .bh .num{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;flex:none}
+  .bh h2{font-size:16px;margin:0;letter-spacing:-.01em}
+  .bdesc{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0 0 12px 34px}
+  .branch.before .num{background:var(--before)} .branch.before .bh h2{color:var(--before)}
+  .branch.spec .num{background:var(--spec)} .branch.spec .bh h2{color:var(--spec)}
+  .branch.cross .num{background:var(--cross)} .branch.cross .bh h2{color:var(--cross)}
+  .branch.cross .tree{--bc:color-mix(in srgb,var(--cross) 40%,var(--border))}
+  .branch.cross details.node::before{background:color-mix(in srgb,var(--cross) 40%,var(--border))}
+  .branch.cross summary.s2 .sd{background:var(--cross)} .branch.cross ol.steps{--sc:var(--cross)}
+  .branch.after .num{background:var(--after)} .branch.after .bh h2{color:var(--after)}
+
+  .tree{display:flex;flex-direction:column;gap:9px;margin-left:11px;padding-left:22px;border-left:2px dashed var(--bc,var(--border2))}
+  .branch.before .tree{--bc:color-mix(in srgb,var(--before) 40%,var(--border))}
+  .branch.spec .tree{--bc:color-mix(in srgb,var(--spec) 40%,var(--border))}
+  .branch.after .tree{--bc:color-mix(in srgb,var(--after) 40%,var(--border))}
+
+  /* LEVEL 1 */
+  details.node{background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-sm);position:relative}
+  details.node::before{content:"";position:absolute;left:-24px;top:26px;width:22px;height:2px;background:var(--bc,var(--border2))}
+  .branch.before details.node::before{background:color-mix(in srgb,var(--before) 40%,var(--border))}
+  .branch.spec details.node::before{background:color-mix(in srgb,var(--spec) 40%,var(--border))}
+  .branch.after details.node::before{background:color-mix(in srgb,var(--after) 40%,var(--border))}
+  details.node[open]{box-shadow:var(--sh-md)}
+  summary.s1{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;padding:12px 14px}
+  summary.s1::-webkit-details-marker{display:none}
+  summary.s1 .ic{font-size:18px;flex:none}
+  summary.s1 .t{font-size:14px;font-weight:700;letter-spacing:-.01em}
+  .car{margin-left:auto;color:var(--faint);font-size:11px;transition:transform .2s;flex:none}
+  details[open]>summary .car{transform:rotate(90deg)}
+  .st{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap;display:none}
+  .show-status summary.s1 .st{display:inline-block}
+  .st.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+  .st.pend{background:color-mix(in srgb,var(--pend) 18%,transparent);color:var(--pend)}
+  .body1{padding:0 14px 12px 43px}
+  .body1 .d{font-size:12.5px;line-height:1.5;color:var(--muted);margin:2px 0 10px}
+
+  /* LEVEL 2 */
+  details.sub{border:1px solid var(--border);border-radius:9px;background:var(--card2);margin-bottom:7px;overflow:hidden}
+  details.sub:last-child{margin-bottom:0}
+  summary.s2{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;padding:9px 11px}
+  summary.s2::-webkit-details-marker{display:none}
+  summary.s2 .sd{width:8px;height:8px;border-radius:3px;flex:none}
+  .branch.before summary.s2 .sd{background:var(--before)} .branch.spec summary.s2 .sd{background:var(--spec)} .branch.after summary.s2 .sd{background:var(--after)}
+  summary.s2 .s2t{font-size:13px;font-weight:700}
+  .body2{padding:2px 12px 12px 28px}
+  .body2 .x{font-size:12px;color:var(--muted);line-height:1.45;margin:0 0 9px}
+
+  /* LEVEL 3 — paso a paso */
+  ol.steps{list-style:none;margin:0;padding:0;counter-reset:st}
+  ol.steps li{counter-increment:st;position:relative;padding:6px 0 6px 30px;font-size:12.5px;line-height:1.45;color:var(--ink);border-left:2px solid var(--border)}
+  ol.steps li:last-child{border-left-color:transparent}
+  ol.steps li::before{content:counter(st);position:absolute;left:-11px;top:5px;width:20px;height:20px;border-radius:50%;background:var(--card);border:2px solid var(--sc,var(--muted));color:var(--sc,var(--muted));font-size:10px;font-weight:800;display:grid;place-items:center}
+  .branch.before ol.steps{--sc:var(--before)} .branch.spec ol.steps{--sc:var(--spec)} .branch.after ol.steps{--sc:var(--after)}
+  ol.steps li code{font-family:var(--mono);font-size:11px;background:var(--chip);padding:1px 5px;border-radius:5px}
+
+  footer.ft{text-align:center;font-size:11.5px;color:var(--faint);margin-top:20px;line-height:1.6}
+</style>
+
+<div class="wrap"><div class="shell">
+  <header class="mh">
+    <div class="ttl"><div class="sig">🗺️</div>
+      <h1>DS AI-ready · paso a paso<small>3 niveles: fase → parte → pasos. Abre lo que quieras profundizar.</small></h1></div>
+    <div class="controls">
+      <button class="tg" id="expandTg" aria-pressed="false">Expandir todo</button>
+      <button class="tg" id="statusTg" aria-pressed="true">Estado</button>
+      <button class="tg" id="themeTg">◐</button>
+    </div>
+  </header>
+
+  <div class="lead">
+    <b>Este mapa no es único: depende de tus respuestas.</b> Antes de recorrerlo se contestan <b>2 preguntas</b> — ¿existe un DS o arrancas de cero? (reordena las fases) y ¿una marca o varias? (poda 2 partes y 15 pasos) — más una tercera solo si hay DS previo. Ver <a href="roadmap.html" style="color:var(--spec)">pre-flight adaptativo</a> y ADR-022.<br><br>Cada <b>fase</b> abre en sus <b>partes</b>, y cada parte en su <b>paso a paso</b>. Los 5 de <b style="color:var(--before)">ANTES</b> ya están hechos; el <b style="color:var(--spec)">spec</b> los escribe; eso desbloquea los 8 de <b style="color:var(--after)">DESPUÉS</b>; y <b style="color:var(--cross)">TRANSVERSAL</b> corre en paralelo a los tres.
+    <div class="legend">
+      <span><span class="lv" style="background:var(--muted)">1</span> fase</span>
+      <span><span class="lv" style="background:var(--muted)">2</span> parte (círculo)</span>
+      <span><span class="lv" style="background:var(--muted)">3</span> paso (número)</span>
+    </div>
+  </div>
+
+  <div id="tree"></div>
+  <footer class="ft">Síntesis: playbook (estabilizar→estructurar→formalizar→enforcar) + Diana (intent→delivery→format) + DLS Lead + este recorrido.</footer>
+</div></div>
+
+<script>
+/* [titulo, descripcion, [ [subtitulo, subdesc, [paso, paso, ...]], ... ] ] */
+const DATA=[
+ {key:'before',num:1,title:'ANTES del spec — reunir y explorar',desc:'Lo que necesitas listo para que el spec registre decisiones sólidas, no adivinanzas.',nodes:[
+  {ic:'🎯',t:'Propósito & intent',mg:'ok',d:'Antes de decidir cómo documentar, defines por qué existe el sistema y para quién.',subs:[
+   ['El problema que resuelve','El dolor concreto que justifica el sistema.',['Nombra el dolor: ¿inconsistencia, lentitud, ilegible para IA?','Escríbelo como meta en una frase medible','Marca qué NO va a resolver (evita scope creep)']],
+   ['Qué formato recibe cada consumidor','Quiénes son es premisa; qué formato gana, no.',['Mapea cada consumidor a su formato: la regla vive como dato, la prosa es vista derivada']],
+   ['Qué tipo de sistema','Define la arquitectura desde el día uno.',['¿Producto único o plataforma reutilizable?','¿Web, móvil, multiplataforma? (define namespaces)']]
+  ]},
+  {ic:'📚',t:'Prior art / investigación',mg:'ok',d:'Estudiar cómo otros ya lo resolvieron y qué falla.',subs:[
+   ['Auditar sistemas reales','Aprender de DS maduros.',['Elige 5-10 DS de referencia de tu dominio','Evalúalos con una rúbrica (tiers, contratos, AI-metadata)','Anota qué copiar y qué evitar']],
+   ['Leer teoría / estándares','La base conceptual AI-ready.',['Lee la literatura (intent-first, docs-as-metadata)','Revisa estándares abiertos: <code>llms.txt</code>, DTCG, MCP','Extrae los principios no-negociables']],
+   ['Patrones y anti-patrones','Nombres que funcionan vs que rompen.',['Colecciona tokens buenos (<code>bg-brand</code>) y malos (<code>blue-500</code>)','Define tus reglas de naming (intención, no valor)','Documenta anti-patterns para el linter futuro']]
+  ]},
+  {ic:'🎨',t:'Fundamentos / primitivas',mg:'ok',d:'La materia prima cruda: valores concretos antes de nombrarlos.',subs:[
+   ['Paleta de color','Las rampas base del sistema.',['Elige los hues semilla (marca + estados)','Genera rampas de N pasos (p.ej. 16)','Valida contraste WCAG por paso (pivotes/floors)']],
+   ['Escalas base','Todo lo que no es color (¡el 80% de una pantalla!).',['Define espaciado (base 4/8)','Define tipografía (familias + escala modular)','Define radios, tamaños, breakpoints']],
+   ['Identidad de marca(s)','Qué va a vestir el sistema.',['Fija el color semilla de cada marca','Describe su personalidad (denso/aireado, serio/lúdico)','Reúne referencias reales (pantallas, guías)']]
+  ]},
+  {ic:'🧱',t:'Base estable',mg:'ok',d:'Ordenar lo existente antes de construir encima.',subs:[
+   ['Auditoría estructural honesta','Medir el caos antes de decidir.',['Inventaria lo que existe (tokens, componentes, archivos)','Mide inconsistencias y duplicados','Puntúa la madurez con una rúbrica AI-ready']],
+   ['Resolver drift / deuda','Reconciliar lo divergente.',['Reconcilia duplicados y versiones','Actualiza o borra docs stale','Consolida ramas/worktrees dispersos']],
+   ['Un único source of truth','Una fuente por hecho.',['Decide dónde vive cada dato','Elimina las copias secundarias','Documenta la regla "una fuente por hecho"']]
+  ]},
+  {ic:'🔀',t:'Decisiones exploradas',mg:'ok',d:'Explorar las bifurcaciones grandes hasta que sean estables.',subs:[
+   ['Modelo de tiers','Cuántas capas de tokens.',['Prototipa 2-3 modelos de tiers','Prueba cada uno contra un caso real','Elige y justifica en un ADR']],
+   ['Estrategia de naming','Cómo se nombran/derivan los tokens.',['Compara álgebra vs tokens nombrados','Decide component-tokens: ¿sí o no?','Fija la gramática de nombres']],
+   ['Mecanismo multibrand','Cómo cambia de marca.',['Decide en qué capa ocurre el swap','Resuelve colisiones de hue (brand vs estado)','Valida con 2 marcas de prueba']]
+  ]}
+ ]},
+ {key:'spec',num:2,title:'EL SPEC — fijar las reglas',desc:'Un markdown lean que convierte lo explorado en reglas escritas. Sus partes = sus secciones.',nodes:[
+  {ic:'🏛️',t:'El Spec (la constitución)',mg:'pend',d:'Fija las reglas; apunta a los contratos, no los contiene. Lo que un humano O un agente necesita para construir igual que tú.',subs:[
+   ['Alcance & no-goals','Qué es y qué NO es.',['Escribe qué ES en 2-3 frases','Lista los no-goals explícitos','Define el criterio de "done" del sistema']],
+   ['Arquitectura de tokens','Gramática + álgebra + tiers.',['Documenta la gramática <code>{role}-{context}-{qualifier}-{state}</code>','Documenta el álgebra (<code>self-N</code>, <code>pivot±N</code>, overrides)','Tabla de los tiers y cómo resuelven']],
+   ['Roles & multibrand','El set semántico y el swap.',['Enumera los roles semánticos + accents','Define el brand-swap (capa + temas)','Fija la política de colisión']],
+   ['Schema de contrato','La forma de todo contrato.',['Define los campos obligatorios','Incluye 1 ejemplo trabajado (Button)','Especifica composition rules + deprecation']],
+   ['Fallas & enforcement','Cómo se previene el drift.',['Lista los modos de falla conocidos','Mapea cada falla a un check de CI','Define el gate de merge']],
+   ['Plan de delivery','Cómo llega a humanos y agentes.',['Mapea contenido → intent → mecanismo (Diana)','Ordena las fases (llms.txt → MCP → Skills)','Define el MVP de delivery']],
+   ['Metodología de build','Cómo se construye.',['Fija el orden (screen-driven, atoms→molecules)','Define la pantalla como acceptance test','Elige la pantalla #1']]
+  ]}
+ ]},
+ {key:'after',num:3,title:'DESPUÉS del spec — construir',desc:'Lo que el spec desbloquea. Cada paso es mecánico porque las reglas ya están fijas.',nodes:[
+  {ic:'🧩',t:'Cerrar la superficie de tokens',mg:'pend',d:'Trazar todos los tokens para que nadie tenga que hardcodear.',subs:[
+   ['Cerrar gaps de color','Los slots sin token.',['Lista slots consumidos sin token (icon, focus-ring…)','Nómbralos siguiendo la gramática','Añádelos al álgebra + valida contraste']],
+   ['Abrir namespaces de layout','Space/size/radius/type.',['Abre los namespaces de layout','Puebla solo lo que la pantalla #1 pide','Mapea a la escala base']],
+   ['Definir accents / data-viz','Los colores extra.',['Asigna los ramps sueltos a <code>accent-1…N</code>','Define aliases (new/magic/promo)','Documenta que son categóricos (sin significado fijo)']]
+  ]},
+  {ic:'📋',t:'Autorar contratos',mg:'pend',d:'El contrato de cada componente, demandado por pantalla.',subs:[
+   ['Metadata (la API)','La ficha técnica.',['Declara variantes/roles/estados/slots','Añade a11y (roles, teclado, CR medidos)','Añade aiHints / usage / antiPatterns']],
+   ['Recipes (slot→token)','El binding.',['Mapea cada slot a su token por estado','Añade overrides por predicado (dark/marca)','Reutiliza recipes entre componentes']],
+   ['Composición & deprecation','Anidamiento y obsolescencia.',['Define allowedChildren/forbiddenChildren/maxDepth','Añade bloque de deprecation (since/replacement)','Enlaza al codemod']]
+  ]},
+  {ic:'⚙️',t:'Compilar',mg:'pend',d:'Generar lo derivable. Nada a mano dos veces.',subs:[
+   ['Índice de reglas atómicas','Direccionable por agentes.',['Corre el parser recipes→índice','Verifica cobertura (toda regla existe)','Expón el índice a los consumidores']],
+   ['Export estándar (DTCG/CSS)','Portable a otras tools.',['Configura el pipeline de export','Emite DTCG + CSS vars + Tailwind','Versiona el output']],
+   ['Variables de Figma','Diseño y dev alineados.',['Genera variables con nombre idéntico','Crea modes por marca','Sincroniza en cada release']]
+  ]},
+  {ic:'🛡️',t:'Enforcement (CI)',mg:'pend',d:'Checks que bloquean el merge si algo rompe las reglas.',subs:[
+   ['Token-audit','Caza hardcode.',['Escanea hex/px hardcodeados','Bloquea el merge si hay violaciones','Reporta con archivo:línea']],
+   ['Contract-audit','Código == contrato.',['Compara recipe vs código renderizado','Verifica que las reglas existen en el índice','Falla en drift']],
+   ['Brand-swap test','La prueba multibrand.',['Renderiza cada componente en cada marca','Asegura cero fuga de nombre de marca','Snapshot por marca']]
+  ]},
+  {ic:'🔨',t:'Construir componentes',mg:'pend',d:'De lo más pequeño a lo más grande, leyendo solo tokens.',subs:[
+   ['Átomos','Las piezas indivisibles.',['Elige los átomos que la pantalla necesita','Implementa leyendo solo tokens','Pasa el brand-swap test']],
+   ['Moléculas','Combinaciones de átomos.',['Compón átomos en moléculas','Reusa los contratos existentes','Verifica composición legal']],
+   ['React (solo tokens)','La regla de oro.',['Prohíbe hex/marca en el código (regla de build)','Consume tokens vía CSS vars / theme','Documenta props = contrato']]
+  ]},
+  {ic:'🖥️',t:'Ensamblar pantallas',mg:'pend',d:'La pantalla es el criterio de "terminado".',subs:[
+   ['Componer','Armar la pantalla real.',['Toma la referencia (screenshot Mobbin)','Identifica qué componentes la arman','Compón la pantalla']],
+   ['Verificar en cada marca','El acceptance test.',['Haz flip de marca','Confirma re-render correcto sin tocar código','Ajusta tokens si algo rompe']],
+   ['Match vs referencia','Fidelidad al diseño.',['Compara lado a lado con la referencia','Anota divergencias','Itera hasta el match']]
+  ]},
+  {ic:'🤖',t:'Delivery AI-ready',mg:'pend',d:'Exponer el sistema para que un agente arme la siguiente pantalla.',subs:[
+   ['AGENTS.md + llms.txt','Fase 0, barato y potente.',['Escribe AGENTS.md (constraints + framing)','Escribe llms.txt (índice guideline)','Sigue el checklist de designsystemsforai.com']],
+   ['MCP server','El corazón del delivery.',['Define las tools (resolve_token, get_contract…)','Conéctalo a las fuentes (recipes, álgebra)','Pruébalo con un agente real']],
+   ['Skills','La capa de workflow.',['Empaqueta skills (generate-component, audit-screen)','Distribúyelas (npm)','Versiónalas']]
+  ]},
+  {ic:'🔁',t:'Gobernar / evolucionar',mg:'pend',d:'Cambiar sin romper a quienes lo consumen.',subs:[
+   ['Deprecation + codemods','Obsolescencia con reemplazo.',['Marca obsoletos con su reemplazo','Escribe el codemod de migración','Comunica el cambio']],
+   ['Usage tracker','Migrar con datos.',['Escanea apps consumidoras','Emite usage-report.json','Prioriza migraciones con datos']],
+   ['Audit loop + versionado','Salud continua.',['Programa el audit recurrente','Versiona con semver + deprecation policy','Mantén el changelog']]
+  ]}
+ ]},
+ {key:'cross',num:4,title:'TRANSVERSAL — en paralelo a todo',desc:'No es una fase que ocurra después: corre junto a las otras tres. Por eso su conteo va aparte.',nodes:[
+  {ic:'🧑',t:'Capa humana / governance social',mg:'pend',d:'El sistema lo sostiene una persona. Sin ella las reglas no tienen quién las defienda. (playbook/05-human-layer.md)',subs:[
+   ['Steward','Quién responde por el sistema.',['Señales de steward latente: reporta inconsistencias hacia el sistema en vez de rodearlas','Descalificadores: sin autoridad de decisión, o asignado por antigüedad sin querer','Descripción del rol aprobable por un manager: horas/semana, alcance, derechos de decisión']],
+   ['Fluidez y cultivo','Que la gente sepa usarlo.',['Rúbrica de fluidez v0 — la rúbrica es gate, la evaluación no','Ruta de cultivo, en paralelo desde el mes 1','Modelo de coste y ancho de banda: cuántas horas cuesta sostenerlo']],
+   ['Rituales y adopción lateral','Cómo se sostiene en el tiempo.',['Ritual de excepciones: dónde vive una excepción cuando aparece','Adopción lateral: qué se comparte cuando el primer artefacto es público','Escalado de casos límite: a quién se acude cuando dos criterios chocan']]
+  ]},
+  {ic:'📣',t:'Buy-in',mg:'pend',d:'Conseguir y sostener el permiso para hacerlo. (playbook/99-buy-in.md)',subs:[
+   ['Encuadre de riesgo','Hablar de exposición, no de pulcritud.',['Nombra el riesgo de no hacerlo: la IA escala la inconsistencia que ya tienes','Traduce cada dimensión débil a su riesgo de negocio','Evita el argumento estético: no convence a quien firma']],
+   ['SAFE como herramienta de priorización','El uso para el que fue diseñado.',['Preséntalo como plan de inversión priorizado, no como nota de madurez','Señala la dimensión más débil como la mayor exposición','Recuerda que la fuente lo escribió para dirección, no para autoevaluarse']],
+   ['Capacidad y datos','Qué se pide y con qué se respalda.',['Incluye la capacidad en el pitch: sin steward con horas, no hay sistema','Lleva datos de adopción y drift, no impresiones','Repite la medición para mostrar la tendencia, no una foto']]
+  ]}
+ ]}
+];
+
+const host=document.getElementById('tree');
+DATA.forEach(branch=>{
+  const sec=document.createElement('div');sec.className='branch '+branch.key;
+  let h='<div class="bh"><span class="num">'+branch.num+'</span><h2>'+branch.title+'</h2></div><p class="bdesc">'+branch.desc+'</p><div class="tree">';
+  branch.nodes.forEach(n=>{
+    h+='<details class="node"><summary class="s1"><span class="ic">'+n.ic+'</span><span class="t">'+n.t+'</span><span class="st '+n.mg+'">'+(n.mg==='ok'?'✓ hecho':'⏳ pend.')+'</span><span class="car">▶</span></summary><div class="body1"><p class="d">'+n.d+'</p>';
+    n.subs.forEach(s=>{
+      h+='<details class="sub"><summary class="s2"><span class="sd"></span><span class="s2t">'+s[0]+'</span><span class="car">▶</span></summary><div class="body2"><p class="x">'+s[1]+'</p><ol class="steps">';
+      s[2].forEach(step=>{h+='<li>'+step+'</li>';});
+      h+='</ol></div></details>';
+    });
+    h+='</div></details>';
+  });
+  h+='</div>';sec.innerHTML=h;host.appendChild(sec);
+});
+
+const expandTg=document.getElementById('expandTg');
+expandTg.addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));e.currentTarget.textContent=on?'Expandir todo':'Colapsar todo';document.querySelectorAll('details').forEach(d=>d.open=!on);});
+const statusTg=document.getElementById('statusTg');
+statusTg.addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));document.querySelector('.shell').classList.toggle('show-status',!on);});
+document.getElementById('themeTg').addEventListener('click',()=>{const r=document.documentElement;const c=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');r.setAttribute('data-theme',c==='dark'?'light':'dark');});
+document.querySelector('.shell').classList.add('show-status');
+</script>
