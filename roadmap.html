@@ -6,7 +6,7 @@
     --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
     --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
     --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
-    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);--cross:hsl(28 78% 46%);
     --stop:hsl(2 72% 50%);
     --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);
   }
@@ -15,7 +15,7 @@
     --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
     --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
     --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
-    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);--cross:hsl(28 88% 62%);
     --stop:hsl(2 80% 66%);
     --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);}}
   :root[data-theme="light"]{
@@ -23,7 +23,7 @@
     --ink:hsl(240 18% 13%);--muted:hsl(240 8% 42%);--faint:hsl(240 8% 58%);
     --border:hsl(240 13% 89%);--border2:hsl(240 13% 80%);--chip:hsl(240 16% 95%);
     --before:hsl(212 72% 50%);--spec:hsl(263 62% 56%);--after:hsl(168 58% 38%);
-    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);
+    --ok:hsl(150 55% 38%);--pend:hsl(38 88% 45%);--ruta:hsl(340 75% 52%);--cross:hsl(28 78% 46%);
     --stop:hsl(2 72% 50%);
     --sh-sm:0 1px 2px hsl(240 20% 20%/.06);--sh-md:0 8px 26px hsl(240 30% 20%/.13);}
   :root[data-theme="dark"]{
@@ -31,7 +31,7 @@
     --ink:hsl(240 18% 93%);--muted:hsl(240 9% 63%);--faint:hsl(240 9% 45%);
     --border:hsl(240 10% 20%);--border2:hsl(240 10% 28%);--chip:hsl(240 11% 16%);
     --before:hsl(212 80% 68%);--spec:hsl(263 74% 74%);--after:hsl(168 58% 55%);
-    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);
+    --ok:hsl(150 55% 56%);--pend:hsl(38 88% 62%);--ruta:hsl(340 85% 68%);--cross:hsl(28 88% 62%);
     --stop:hsl(2 80% 66%);
     --sh-sm:0 1px 2px hsl(0 0% 0%/.3);--sh-md:0 10px 32px hsl(0 0% 0%/.55);}
   body{margin:0;background:var(--page);color:var(--ink);
@@ -668,7 +668,43 @@ const MAP=[
    ['Programa la revisión','Recurrente y automática. Una revisión que depende de que alguien se acuerde ocurre cuando ya hay un problema.'],
    ['Versiona con una política de obsolescencia','Reglas claras de qué constituye un cambio que rompe y cuánto tiempo sobrevive lo obsoleto antes de desaparecer.'],
    ['Mantén el registro de cambios','Legible por personas y por máquinas. Es lo que permite a un agente saber qué cambió desde la última vez que consultó.']],
-  done:'El sistema se mantiene sano sin campañas de limpieza.'}]}
+  done:'El sistema se mantiene sano sin campañas de limpieza.'}]},
+{arc:'cross',ic:'🧑',t:'Capa humana',st:'pend',
+ goal:'El sistema lo sostiene una persona. Sin ella las reglas no tienen quién las defienda. <b>Corre en paralelo a las otras tres ramas</b>, no después — por eso su conteo va aparte.',
+ out:'<b>Al terminar tienes:</b> un steward con nombre, horas asignadas y derechos de decisión; y un ritual donde vivan las excepciones.',partes:[
+ {t:'Steward',frame:'Quién responde por el sistema.',pasos:[
+  ['Detecta al steward latente','La señal no es "sabe mucho de tokens": es que <b>traza en vez de parchear</b>. Quien reporta una inconsistencia hacia el sistema, en vez de rodearla, ya está haciendo el trabajo.'],
+  ['Descarta los perfiles que no encajan','Sin autoridad de decisión, o asignado por antigüedad sin quererlo. El rol exige poder zanjar, no solo ejecutar.'],
+  ['Escribe una descripción que un manager pueda aprobar','Horas por semana asignadas formalmente, alcance de responsabilidad, derechos de decisión y a quién se escala.']],
+  done:'Hay una persona con nombre, y su manager lo sabe.'},
+ {t:'Fluidez y cultivo',frame:'Que la gente sepa usarlo.',pasos:[
+  ['Define una rúbrica de fluidez','La rúbrica es el gate; evaluar a cada persona, no. Medir a la gente antes de tener criterio genera política, no mejora.'],
+  ['Abre una ruta de cultivo','En paralelo desde el primer mes. La fluidez con IA convierte a expertos de dominio en constructores, no solo a desarrolladores.'],
+  ['Calcula el coste','Cuántas horas cuesta sostener el sistema. Un steward sin horas asignadas es un voluntario, y el sistema hereda esa fragilidad.']],
+  done:'Sabes cuánto cuesta sostenerlo y quién necesita qué formación.'},
+ {t:'Rituales y adopción',frame:'Cómo se sostiene en el tiempo.',pasos:[
+  ['Monta el ritual de excepciones','Dónde vive una excepción cuando aparece. Sin sitio, cada desviación legítima se registra como error y cada error se justifica como excepción.'],
+  ['Comparte hacia los lados','Cuando el primer artefacto es público, otros equipos lo adoptan sin que se lo impongas.'],
+  ['Define el escalado','A quién se acude cuando dos criterios chocan. Sin esto, la cadena entre decisión y ejecución se vuelve a alargar.']],
+  done:'Una excepción nueva tiene dónde vivir y quién la aprueba.'}]},
+{arc:'cross',ic:'📣',t:'Buy-in',st:'pend',
+ goal:'Conseguir y sostener el permiso para hacerlo. Sin esto, el sistema técnico puede estar impecable y morir igual.',
+ out:'<b>Al terminar tienes:</b> el argumento en el lenguaje de quien firma, respaldado con datos propios.',partes:[
+ {t:'Encuadre de riesgo',frame:'Hablar de exposición, no de pulcritud.',pasos:[
+  ['Nombra el riesgo de no hacerlo','La IA escala la inconsistencia que ya tienes. No es una mejora de diseño: es un mecanismo de control de riesgo.'],
+  ['Traduce cada debilidad a riesgo de negocio','Fragmentación de marca, deuda de accesibilidad, un coste de corrección que supera la ganancia de productividad.'],
+  ['Evita el argumento estético','No convence a quien firma. Dirección ya asume que la IA acelera; lo que le preocupa es perder el control.']],
+  done:'Puedes explicar el problema sin usar una sola palabra de diseño.'},
+ {t:'Priorizar la inversión',frame:'El uso para el que SAFE fue diseñado.',pasos:[
+  ['Preséntalo como plan priorizado','No como nota de madurez. La dimensión más débil es la mayor exposición, y por tanto la primera inversión.'],
+  ['Ancla a categorías que ya entienden','Modernización de infraestructura, mitigación de riesgo, resiliencia operativa. No "design system".'],
+  ['Recuerda de dónde sale el marco','SAFE se escribió para hablar con dirección, no para autoevaluarse. Úsalo en su contexto.']],
+  done:'La inversión está expresada en una categoría que ya tiene presupuesto.'},
+ {t:'Capacidad y datos',frame:'Qué se pide y con qué se respalda.',pasos:[
+  ['Incluye la capacidad en la petición','Sin un steward con horas, no hay sistema. Y cuando la velocidad sube, los roles de soporte tienen que acompañar: se contrata más, no menos.'],
+  ['Lleva datos, no impresiones','Adopción, drift, coste de corrección. Un pitch sin métricas es aspiracional y pierde contra prioridades inmediatas.'],
+  ['Repite la medición','Para mostrar tendencia, no una foto. La primera medición no convence; la tercera sí.']],
+  done:'Tienes una serie temporal, no una diapositiva.'}]}
 ];
 
 
@@ -703,7 +739,7 @@ function railDraw(total,cur){
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
 /* ── el mapa detallado, filtrado por las respuestas ────────────────── */
-const ARCC={before:'var(--before)',spec:'var(--spec)',after:'var(--after)'};
+const ARCC={before:'var(--before)',spec:'var(--spec)',after:'var(--after)',cross:'var(--cross)'};
 
 /* Con una sola marca desaparecen las partes multibrand y los pasos marcados. */
 function partesDe(f){
@@ -888,9 +924,8 @@ function render(){
       <span>ruta <b>${retro?'retrofit':'greenfield'}</b></span>
       <span>marcas <b>${sb?'una':'varias'}</b></span>
       <span>${retro?`más débil <b>${worst.name}</b>`:'madurez <b>no aplica</b>'}</span>
-      <span>fases <b>14</b></span>
-      <span>partes <b>${MAP.reduce((a,f)=>a+partesDe(f).length,0)}</b></span>
-      <span>pasos <b>${MAP.reduce((a,f)=>a+partesDe(f).reduce((b,p)=>b+p.pasos.length,0),0)}</b></span>
+      <span>fases <b>${MAP.filter(f=>f.arc!=='cross').length}</b> + <b>${MAP.filter(f=>f.arc==='cross').length}</b> transversales</span>
+      <span>pasos <b>${MAP.filter(f=>f.arc!=='cross').reduce((a,f)=>a+partesDe(f).reduce((b,p)=>b+p.pasos.length,0),0)}</b> secuenciales + <b>${MAP.filter(f=>f.arc==='cross').reduce((a,f)=>a+partesDe(f).reduce((b,p)=>b+p.pasos.length,0),0)}</b> en paralelo</span>
     </div>
 
     ${sb?`<h3>Podado por ser single-brand</h3>
@@ -936,7 +971,7 @@ function render(){
 
     <h3>Tu mapa, paso a paso</h3>
     <p class="q-help" style="margin-bottom:11px">Cada fase abre en sus partes, y cada parte en
-      sus pasos. ${sb?'Lo podado por ser de una sola marca no aparece.':
+      sus pasos. Las dos ultimas fases son TRANSVERSALES: corren en paralelo a todo, no al final. ${sb?'Lo podado por ser de una sola marca no aparece.':
       'Los pasos marcados <b style="color:var(--ruta)">multibrand</b> existen solo porque el sistema viste varias marcas.'}</p>
     <button class="tg" id="btnAll" style="margin-bottom:12px">Expandir todo</button>
     ${order.map((f,i)=>fase(f,i)).join('')}
