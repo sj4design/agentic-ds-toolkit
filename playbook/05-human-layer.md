@@ -1,6 +1,6 @@
 ---
 title: "Phase E — Human Layer / Governance Social"
-status: "placeholder — addresses Loop F4.8 (chapter outline) + Phase E expansion in roadmap"
+status: "v1 — de-placeholder 2026-07-23: el contenido propio de sources/07 y 08 (incidente de la escala amarilla, la costura designops/devops, la redefinición del rol) ya está transcrito, no solo nombrado. Las 6 secciones siguen siendo outline a instanciar."
 intent: "framing"
 audience: "system steward + leadership + IC contributors"
 self_contained: true
@@ -11,6 +11,115 @@ self_contained: true
 > Esta es la fase **cross-cutting** del roadmap (paralela a Fases A-D). Sin un humano accountable, los artifacts técnicos producidos quedan huérfanos.
 >
 > Cita central que define la fase: *"The infrastructure I've documented in this series is reproducible. [...] The organizational shift, getting a team to encode its knowledge and accept accountability for what gets encoded, that's harder than any of the technical work."* — Cristian Morales, `sources/08-...:82`. Este capítulo llena exactamente el gap que Cristian admite no tener (`sources/08-...:74`).
+
+## El incidente de la escala amarilla — el caso fundacional
+
+Este capítulo se apoyaba en "la yellow scale story" para justificar su rúbrica de steward, pero
+nunca la contaba. Aquí está, porque **la secuencia es la metodología**.
+
+Una desarrolladora construía un mensaje de aviso y notó que el contraste del texto sobre el fondo
+amarillo parecía mal (`sources/07-...:22`). Podría haber ajustado el color a ojo y seguir. **No lo
+hizo: vino a preguntar** (`sources/07-...:24`). Revisaron juntos la implementación —tokens
+correctos, mapeo correcto, uso correcto— y el token auditor confirmó que el componente estaba bien
+(`sources/07-...:26`).
+
+> ### El error era suyo, del propio diseñador del sistema.
+> — `sources/07-...:28`
+
+En algún momento había estropeado los valores de la escala primitiva de amarillo
+(`sources/07-...:30`). Lo interesante no es el arreglo, que fue trivial (`sources/07-...:32`). Es
+la **secuencia de seis pasos**, que es un diagnóstico reproducible (`sources/07-...:34`):
+
+1. Una desarrolladora detecta un problema visual.
+2. **No parchea alrededor.**
+3. Lo traza hacia atrás a través del sistema.
+4. El auditor confirma que la implementación es correcta.
+5. El error apunta a la capa de primitivos.
+6. La capa de primitivos apunta a su dueño.
+
+> "The system didn't surface an error. It surfaced whose error it was. Mine."
+> — `sources/07-...:80`
+
+**El contraste con el flujo tradicional** es el argumento entero: ahí ese fallo de contraste se
+detecta —si se detecta— en QA, y *"nobody knows where the actual decision went wrong because the
+chain between decision and execution has too many links"* (`sources/07-...:36`). El sistema
+agéntico no evita el error; **acorta la cadena hasta que el error tiene dueño**.
+
+Por eso la señal de steward latente no es "sabe mucho de tokens", sino **traza en vez de
+parchear**. Y por eso la accountability es un prerrequisito y no un valor: sin alguien que acepte
+que el error apunte hacia él, la cadena vuelve a alargarse.
+
+## La costura donde designops se encuentra con devops
+
+Sección que faltaba entera, y es el aporte conceptual más original de la fuente.
+
+> "A design token governance rule and a CI pipeline linting check serve the same structural
+> purpose: enforce decisions at the point of execution."
+> — `sources/07-...:56`
+
+La distinción que se sigue: *"My token auditor doesn't just check that tokens exist (that's a
+linter). It checks whether the relationships between tokens violate the design intent (that's
+governance)"* (`sources/07-...:58`). Es la misma frontera linter/governance del capítulo
+[04-enforce](04-enforce.md), pero **enunciada desde el lado humano**: no es que la herramienta sea
+más lista, es que alguien tuvo que articular cuál es la intención.
+
+No se trata de fundir las dos disciplinas —siguen teniendo necesidades y expertise distintos
+(`sources/07-...:60`)—, sino de reconocer que **el trabajo está en la costura**. Ese es el terreno
+del steward: ni diseño puro ni ingeniería pura.
+
+> ⚠️ **Origen doble, atribución a medias.** Este ejemplo (`--foreground-muted` usado para texto de
+> contenido) aparece en `sources/07` **y** en `sources/06`. El playbook lo atribuía solo a 06. Se
+> deja constancia porque la costura es, en 07, un argumento sobre el *rol*; en 06, sobre la
+> *herramienta*.
+
+## Qué rol es este, exactamente (Cristian Part 8)
+
+La rúbrica de la §1 gana precisión con la definición del propio autor. Y arranca con una tesis
+contraintuitiva que un capítulo de capa humana no puede omitir:
+
+> "the companies that get this right will hire more designers, more PMs, more QA specialists. Not fewer."
+> — `sources/08-...:40`
+
+El razonamiento: cuando la velocidad de desarrollo sube 3-4x, los roles de alrededor tienen que
+acompañar o quemas el sistema (`sources/08-...:42`). **Es un argumento de headcount para el
+capítulo de buy-in**, no un consuelo.
+
+Pero "más diseñadores" no significa más del mismo rol (`sources/08-...:44`). El trabajo que
+describe *"sits in a space that requires design judgment, systems thinking, and enough technical
+fluency to work the interface between design and code"* — **tres competencias**, y no mapea ni al
+product designer tradicional ni al rol clásico de design systems.
+
+**Y el corolario que amplía el mandato:** la fluidez con IA convierte a expertos de dominio en
+constructores. Su Head of Operations —experta en contratación clínica, no desarrolladora ni en vías
+de serlo— construyó su propia herramienta de proyecciones: *"a domain expert whose background gave
+her the ability to describe what she needed, and AI fluency gave her the ability to encode that
+knowledge into a tool"* (`sources/08-...:62`). El steward no es el único que encoda; es quien
+garantiza que lo encodado sea coherente.
+
+## La prescripción (y por qué es la misma en las dos fuentes)
+
+Las dos partes convergen en un mismo "qué hacer", y es lo más accionable del capítulo:
+
+> "Teams need to sit down and set these rules. Surface errors when they catch them."
+> — `sources/07-...:70`
+
+Ampliado en Part 8: articular las reglas que se venían siguiendo de forma implícita, **sacar los
+errores a la superficie cuando se detectan**, y acordar qué es correcto y qué es una excepción —
+porque si no, *"AI scales whatever it finds. Including errors. Including drift"* (`sources/08-...:80`).
+
+Ese tercer punto —**acordar qué es correcto y qué es excepción**— es la entrada directa del ritual
+de excepciones de la §4. No es un trámite de gobernanza: es lo que impide que cada desviación
+legítima se registre como error y que cada error se justifique como excepción.
+
+## Alcance honesto de esta metodología
+
+El autor declara sus condiciones privilegiadas (`sources/08-...:68`), y conviene recogerlas porque
+el mandato de este repo es **replicabilidad**: diseñador único, acceso directo a ingeniería,
+empresa pequeña, adopción impulsada desde arriba, sin comités.
+
+Ninguna de esas condiciones es la de un equipo grande con múltiples marcas. La infraestructura es
+reproducible; **el cambio organizativo es la parte difícil**, y es exactamente lo que este capítulo
+—y la Fase E— tienen que resolver para equipos que no sean el del autor.
 
 ## 6 secciones obligatorias
 

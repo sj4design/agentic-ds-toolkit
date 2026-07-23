@@ -5,7 +5,7 @@ secondary_intents: [workflow, framing]
 audience: "Cualquiera que construya un DS AI-ready con agentes que generan artefactos en paralelo"
 prerequisites: "Repo git del DS; trabajo con agentes / worktrees / sesiones que producen archivos"
 sources:
-  - sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:152 (AI amplifica la estructura existente)
+  - sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:153 (AI amplifica la estructura existente)
   - sources/08-cristian-morales-part-8-what-building-agentic-systems-taught-me.md:34 (speed sin support structures = debt)
   - sources/06-cristian-morales-part-6-encoding-governance-on-agentic-design-systems.md:38 (enforcement automático, no prescripción)
   - sources/07-cristian-morales-part-7-the-human-layer-in-agentic-design-systems.md:82 (encode decisions = accountability)
@@ -19,7 +19,7 @@ status: "v1 — escrito desde 4 incidentes reales (2026-06-13) + untrackedHTMLLi
 ## Cita verbatim
 
 > "AI amplifies whatever structure already exists. If the structure is mature, AI becomes leverage. If the structure is weak, AI becomes volatile."
-> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:152`
+> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:153`
 
 > "Speed without the support structures to match it doesn't produce more output. It produces more debt. Faster."
 > — `sources/08-cristian-morales-part-8-what-building-agentic-systems-taught-me.md:34`
@@ -86,7 +86,7 @@ Color-ramp ya había encontrado el patrón un año antes: su audit `untrackedHTM
 
 ## Referencias
 
-- AI amplifica estructura: `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:152`
+- AI amplifica estructura: `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:153`
 - Speed sin support = debt: `sources/08-cristian-morales-part-8-what-building-agentic-systems-taught-me.md:34`
 - Enforcement automático, no prescripción: `sources/06-cristian-morales-part-6-encoding-governance-on-agentic-design-systems.md:38`
 - Encode decisions = accountability: `sources/07-cristian-morales-part-7-the-human-layer-in-agentic-design-systems.md:82`

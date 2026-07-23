@@ -6,7 +6,7 @@ status: "redactado desde el case study Link FieldIQ (sesiones 2026-06-19 → 21)
 
 # 07 — Component contracts: Formalise en la práctica
 
-> Este capítulo es el **par concreto** de [`03-formalise.md`](03-formalise.md) (*components as APIs*, que es teoría + manifest abstracto). Aquí está el **método probado**: cómo tomar un componente de un DS real **curado a mano y NO nacido AI-ready** y producir un **contrato AI-ready** + su verificación en vivo. Validado contratando 6 componentes del DS de **Link FieldIQ** (ver **`case-studies/link-fieldiq/`**).
+> Este capítulo es el **par concreto** de [`03-formalise.md`](03-formalise.md) (*components as APIs*, que es teoría + manifest abstracto). Acá está el **método probado**: cómo tomar un componente de un DS real **curado a mano y NO nacido AI-ready** y producir un **contrato AI-ready** + su verificación en vivo. Validado contratando 6 componentes del DS de **Link FieldIQ** (ver **`case-studies/link-fieldiq/`**).
 
 ---
 

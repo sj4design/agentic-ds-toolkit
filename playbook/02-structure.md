@@ -9,7 +9,7 @@ sources:
   - sources/11-grace-han-ai-ready.md (Phase 2 Structure)
   - sources/03-cristian-morales-part-3-design-system-documentation-as-structured-metadata.md (token schema shape)
   - sources/04-cristian-morales-part-4-mapping-your-design-system-for-ai-agents.md (relationship map)
-status: "Draft — contenido escrito; Gotchas a llenar con aplicación real fuera de color-ramp"
+status: "v1 — reconciliado contra sources/04 completo (2026-07-23): +6 métodos deterministas (query protocols, deep tracing, instance counting, usedBy, pipeline scan) +Must Phase 2 de Grace"
 ---
 
 # 02 — Structure: capa semántica explícita + intent classification
@@ -94,6 +94,66 @@ ComponentX:
 ```
 
 Auto-generable. Cristian Part 4 (`:235`): "The index is auto-generated. A Python script scans `src/components`, parses imports, builds the relationship graph, outputs TOON files."
+
+### Step A.2b — Los 6 métodos deterministas del mapping (Cristian Part 4)
+
+La tesis "sin mapa el AI explora, con mapa navega" (`sources/04-...:18`) no es retórica: se apoya
+en un experimento y en seis métodos reproducibles. El mapa mínimo de A.2 se queda corto — modela
+solo `uses`, que es justo la dirección que **no** resuelve el caso que motivó todo.
+
+**1 · La evidencia.** Once trials en cuatro días, mismo modelo y mismo codebase, con una sola
+variable: si el agente tenía el índice pre-computado (`sources/04-...:36`). Sin él exploraba
+—`find`, `grep`, leer ficheros uno a uno— tardando 4-5 minutos por run (`sources/04-...:38`), y de
+**55 componentes encontraba 43-44** (`sources/04-...:40`). El fallo grave no fue el conteo sino un
+**falso negativo**: reportó `Tooltip` como "unused" cuando estaba activo tres niveles abajo
+(`Tooltip` → `CopyButton` → `CodeBlock` → `SkillCard`) (`sources/04-...:42`). Un falso negativo así
+**es una recomendación de borrar código en uso** (`sources/04-...:46`). En multibrand el riesgo se
+multiplica: un componente que solo una marca consume en profundidad parece muerto desde las demás.
+
+**2 · El índice son 3 piezas, y `usedBy` es la que faltaba** (`sources/04-...:50`): inventario de
+componentes, **grafo bidireccional** —"Who uses whom. Who is used by whom" (`sources/04-...:76`)— y
+estadísticas de resumen. La bidireccionalidad es lo que resuelve el caso Tooltip sin `grep`: el
+agente lee que `Tooltip` es `usedBy: CopyButton` y sube la cadena (`sources/04-...:96`). Se carga
+una vez, **~4.000 tokens** para el índice completo (`sources/04-...:110`). Añade `usedBy` al shape
+de A.2.
+
+**3 · Deep tracing.** Los átomos no aparecen a nivel de página; viven anidados. La regla de
+traversal se documenta y se carga con el índice: *"follow dependency chains to leaf nodes.
+Components with `uses[0]` are terminal"* (`sources/04-...:170`).
+
+**4 · Instance counting: imports ≠ uso.** El índice rastrea imports, pero una página importa
+`Button` una vez y lo instancia cinco (`sources/04-...:176`). Contar exige parsear templates:
+**cuenta tags, no sentencias `import`** (`sources/04-...:185`). Edge case de slots: en
+`<Button><Icon /></Button>` la instancia de `Icon` pertenece al scope padre — detecta componentes
+con slot y no recurses dentro (`sources/04-...:187`). Import count dice cuántos ficheros lo
+referencian; instance count, cuánto se usa de verdad (`sources/04-...:189`) — que es como mides
+adopción real por marca.
+
+**5 · El pipeline `scan()` tiene 6 fases** (`sources/04-...:289`), no "parsea imports": detectar
+framework, componentes, utilidades, schemas, data queries y estilos (`sources/04-...:293-303`), y
+`_generate_outputs()` escribe los TOON (`sources/04-...:305`).
+
+**6 · Query protocols — el determinismo, cuantificado.** Los ficheros del índice son *datos*; los
+protocolos son *instrucciones* (`sources/04-...:193`). Sus tres reglas: comprobar el contexto antes
+de leer, no releer nunca ficheros ya cargados, y hacer baratas las preguntas de seguimiento
+(`sources/04-...:199-207`). El impacto es la esencia del "determinismo" del capítulo: **sin
+protocolos el coste de una follow-up oscilaba entre 0 y 36.000 tokens** (`sources/04-...:211`);
+**con protocolos, 0,04% de varianza entre runs** (`sources/04-...:213`). Adaptado de la
+documentación de codebase indexing de Cursor (`sources/04-...:215`).
+
+### Step A.3 — La acción que da nombre a la fase (Grace Han, Phase 2)
+
+El modelo en capas (A.1) es la estructura; la **acción** que Grace exige es renombrar. Sus Must
+(`sources/11-...:145-149`):
+
+1. Separar tokens globales y semánticos (`sources/11-...:147`) — cubierto por el campo `layer` en A.1.
+2. **Renombrar tokens basados en apariencia a nombres de intención** (`sources/11-...:148`).
+3. Asegurar que los tokens de estado referencian semánticos, no valores crudos (`sources/11-...:149`) — la cadena `references` de A.1.
+
+El #2 es el que el capítulo omitía como acción. Su racional es la fragilidad ante rebrand: un
+token `hover` que apunta a un hex crudo se rompe al cambiar de marca; uno que apunta a un
+semántico, no. Es exactamente lo que el mandato multibrand del repo necesita, y por qué el
+renombrado no es cosmética sino la precondición del brand-swap.
 
 ## Ejemplo concreto (color-ramp)
 

@@ -9,7 +9,7 @@ sources:
   - sources/11-grace-han-ai-ready.md (Phase 1 Stabilise)
   - sources/07-cristian-morales-part-7-the-human-layer-in-agentic-design-systems.md (capa humana — Step 0.3)
   - sources/08-cristian-morales-part-8-what-building-agentic-systems-taught-me.md (AI fluency 4Ds — Step 0.2)
-status: "Draft — contenido escrito; Gotchas a llenar con aplicación real fuera de color-ramp"
+status: "v1 — reconciliado contra sources/11 (2026-07-23): +las acciones Must/Should de estabilización, que el capítulo omitía"
 ---
 
 # 01 — Stabilise: diagnosis estructural antes de cualquier inversión AI
@@ -20,7 +20,7 @@ status: "Draft — contenido escrito; Gotchas a llenar con aplicación real fuer
 > — `sources/11-grace-han-ai-ready.md:79`
 
 > "AI amplifies whatever structure already exists. If the structure is mature, AI becomes leverage. If the structure is weak, AI becomes volatile."
-> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:152`
+> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:153`
 
 ## [INTERPRETACIÓN]
 
@@ -104,6 +104,34 @@ Per Cristian Part 7 (`sources/07-...:82`): _"Most designers hand off decisions a
 | _ej: cuándo un componente entra al canon_ | Tech lead Y + Designer X | no — implícito en code review | no |
 
 Cualquier "Encoded? = no" + "Auditable? = no" = riesgo de scaled errors. Step 0.3 produce la lista; siguientes fases la cierran.
+
+### 0.4 — Las acciones de estabilización (Grace Han, Phase 1)
+
+El diagnóstico (0.1–0.3) dice **dónde** estás. Estas son las **acciones** que la fase exige, y
+que un capítulo titulado *Stabilise* no puede omitir. Grace las lista como Must/Should
+(`sources/11-...:103-112`):
+
+**Must:**
+1. Consolidar tokens duplicados (`sources/11-...:105`).
+2. Quitar valores hardcodeados de los componentes core (`sources/11-...:106`).
+3. Definir una única fuente de verdad para los tokens globales (`sources/11-...:107`).
+
+**Should:**
+4. Identificar el drift cross-platform (`sources/11-...:111`).
+5. Congelar la creación descontrolada de tokens locales (`sources/11-...:112`).
+
+Grace avisa del carácter de la fase y de por qué va primero:
+
+> "This phase is deliberately unglamorous." — `sources/11-...:96`
+
+> "You cannot optimise entropy." — `sources/11-...:116`
+
+El criterio de secuenciación es suyo: *"If you skip stabilisation and move directly to AI
+integration, you are scaling instability"* (`sources/11-...:114`). **Tres fuentes convergen en
+la misma tesis** — la IA multiplica lo que encuentra, incluido el caos: Grace-11 ("scaling
+instability"), Cristian Part 8 (*"AI scales whatever it finds. Including errors"*,
+`sources/08-...:80`) y Grace-10 (*"AI amplifies whatever structure already exists"*,
+`sources/10-...:153`). Es la razón de fondo de que estabilizar no sea opcional ni posterior.
 
 ## Ejemplo concreto (case study color-ramp)
 

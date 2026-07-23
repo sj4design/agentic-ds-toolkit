@@ -18,7 +18,7 @@ status: "Draft — contenido escrito; Gotchas a llenar con aplicación real fuer
 > — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:35`
 
 > "An AI-ready design system is not a design upgrade. It is a risk management mechanism that enables safe acceleration."
-> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:39`
+> — `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:40`
 
 > "AI is a multiplier. It multiplies structure."
 > — `sources/11-grace-han-ai-ready.md:35`
@@ -37,7 +37,7 @@ Quien vende debe llegar con **evidencia operativa** (Cristian Part 8: head of da
 
 ### 99.1 — Framing de risk
 
-Grace Han (`sources/10-...:23-27, :39`):
+Grace Han (`sources/10-...:23-27, :38-40`):
 > "Then position the design system as the control layer. An AI-ready design system is not a design upgrade. It is a risk management mechanism that enables safe acceleration."
 
 Estructura del pitch:
@@ -64,7 +64,7 @@ Presentación a leadership:
 
 ### 99.3 — Capability como parte del pitch
 
-Per Grace Han `:10` ("Make capability part of the case"): un riesgo subestimado es **capability** del equipo. AI fluency baja escala errores. El pitch debe incluir:
+Per Grace Han `:113` ("Make capability part of the case"): un riesgo subestimado es **capability** del equipo. AI fluency baja escala errores. El pitch debe incluir:
 - AI fluency baseline del equipo (Step 0.2)
 - Training plan asociado a la inversión
 - Hiring/role redefinition si aplica (Cristian Part 8 `:42` — "the ratio between builders and support profiles was calibrated for a different speed")
@@ -72,13 +72,15 @@ Per Grace Han `:10` ("Make capability part of the case"): un riesgo subestimado 
 ### 99.4 — Datos para presentar
 
 Si tienes métricas propias > usá esas. Si no, citas directionales de las fuentes:
-- Cristian Part 2 (`:42`): "With infrastructure: 2x faster, 54% more accurate, zero false negatives. At basically the same token cost."
+- Cristian Part 2 (`:58`): "With infrastructure: 2x faster, 54% more accurate, zero false negatives. At basically the same token cost."
 - Cristian Part 8 (`:22`): "Our development team is producing at 3x to 4x per developer compared to 2023."
-- Grace Han (`sources/10-...:64`): "20-40% productivity gains... 30-50% of front-end budgets in refactoring."
+- Grace Han (`sources/10-...:65`): "20-40% productivity gains... 30-50% of front-end budgets in refactoring."
 
 ## Ejemplo concreto
 
-_Sin caso concreto público todavía. Color-ramp es founder-solo, no requirió buy-in interno._
+Grace Han trae un escenario cautelar listo para pitch (`sources/10-...:73-79`): una organización de retail global introdujo generación de interfaces asistida por IA en varios equipos regionales; en meses, los patrones de variante se multiplicaron, el uso de color divergió sutilmente, los estados de accesibilidad quedaron inconsistentes, y **el costo de corrección superó las ganancias de productividad iniciales**. Es el "antes" concreto que justifica el control layer.
+
+_(Caso propio pendiente: color-ramp es founder-solo, no requirió buy-in interno.)_
 
 ## Gotchas / edge cases
 
@@ -102,12 +104,12 @@ _Sin caso concreto público todavía. Color-ramp es founder-solo, no requirió b
 ## Referencias
 
 - Output volume → variability → risk: `sources/10-grace-han-how-to-get-buy-in-for-an-ai-ready-design-system.md:35`
-- DS como risk management: `:39`
+- DS como risk management: `:40`
 - SAFE framework: `:86-108`
-- Capability part of case: `:10` (header §"Make capability part of the case")
+- Capability part of case: `:113` (header §"Make capability part of the case")
 - Risk if weak (per SAFE dim): `:100-108` (tabla)
-- Reframing reduces resistance: `:146`
-- Productivity gains directionales: `:64`
+- Reframing reduces resistance: `:147`
+- Productivity gains directionales: `:65`
 - AI multiplier: `sources/11-grace-han-ai-ready.md:35`
 - Dev velocity 3-4x: `sources/08-cristian-morales-part-8-what-building-agentic-systems-taught-me.md:22`
 - Accuracy gains: `sources/02-cristian-morales-part-2-towards-an-agentic-design-system.md:42`
